@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverter
+import androidx.room.TypeConverters
+
 
 @Database(entities = [Alarm::class], version = 1, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun alarmDao(): AlarmDao
 
@@ -24,19 +26,5 @@ abstract class AppDatabase : RoomDatabase() {
                 instance
             }
         }
-    }
-}
-
-
-
-class Converters {
-    @TypeConverter
-    fun fromStringList(value: List<String>): String {
-        return value.joinToString(",")
-    }
-
-    @TypeConverter
-    fun toStringList(value: String): List<String> {
-        return value.split(",")
     }
 }

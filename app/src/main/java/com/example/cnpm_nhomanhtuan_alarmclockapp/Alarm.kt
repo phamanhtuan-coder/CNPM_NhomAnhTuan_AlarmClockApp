@@ -2,6 +2,7 @@ package com.example.cnpm_nhomanhtuan_alarmclockapp
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 
 @Entity(tableName = "alarms")
 data class Alarm(
