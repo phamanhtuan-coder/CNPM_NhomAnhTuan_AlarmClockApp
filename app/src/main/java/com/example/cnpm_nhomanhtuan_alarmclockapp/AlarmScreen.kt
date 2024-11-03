@@ -1,11 +1,14 @@
 package com.example.cnpm_nhomanhtuan_alarmclockapp
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -65,54 +68,57 @@ fun AlarmScreen(
                 }
             )
         },
-        content = { innerPadding ->
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(innerPadding)
+        contentColor = CustomColors.primary,
+        bottomBar = {
+            BottomAppBar(
+                containerColor = CustomColors.secondary,
+                contentPadding = PaddingValues(16.dp)
             ) {
-                items(10) {
-                    AlarmCard()
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // Left Icons
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(24.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        IconButton(onClick = {
+                            navController.navigate(Screen.AlarmScreen.route)
+                        }) {
+                            Icon(Icons.Filled.Alarm, contentDescription = "Alarm", tint = CustomColors.onPrimary)
+                        }
+                        IconButton(onClick = {
+                            navController.navigate(Screen.AlarmScreen.route)
+                        }) {
+                            Icon(Icons.Filled.AlarmOn, contentDescription = "Clock", tint = CustomColors.fontColor)
+                        }
+                    }
+                    // Right Icons
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(24.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        IconButton(onClick = {
+                            navController.navigate(Screen.TimerScreen.route)
+                        }) {
+                            Icon(Icons.Filled.Timer, contentDescription = "Timer", tint = CustomColors.fontColor)
+                        }
+                        IconButton(onClick = {
+                            navController.navigate(Screen.StopwatchScreen.route)
+                        }) {
+                            Icon(Icons.Filled.AvTimer, contentDescription = "Stopwatch", tint = CustomColors.fontColor)
+                        }
+                    }
                 }
             }
         },
-        contentColor = CustomColors.primary,
-        bottomBar = {
-          BottomAppBar (
-              containerColor = CustomColors.secondary,
-              contentPadding = PaddingValues(16.dp),
-          ) {
-              Row (
-                    modifier = Modifier.fillMaxSize(),
-                  verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-              ) {
-                  IconButton(onClick = {
-                      navController.navigate(Screen.AlarmScreen.route)
-                  }) {
-                      Icon(Icons.Filled.Alarm, contentDescription = "Alarm", tint = CustomColors.onPrimary)
-                  }
-                  IconButton(onClick = {
-                      navController.navigate(Screen.AlarmScreen.route)
-                  }) {
-                      Icon(Icons.Filled.AlarmOn, contentDescription = "Clock", tint = CustomColors.fontColor)
-                  }
-                  IconButton(onClick = {
-                      navController.navigate(Screen.TimerScreen.route)
-                  }) {
-                      Icon(Icons.Filled.Timer, contentDescription = "Timer", tint = CustomColors.fontColor)
-                  }
-                  IconButton(onClick = {
-                      navController.navigate(Screen.StopwatchScreen.route)
-                  }) {
-                      Icon(Icons.Filled.AvTimer, contentDescription = "Stopwatch", tint = CustomColors.fontColor)
-                  }
-              }
-          }
-
-        },
         floatingActionButton = {
             FloatingActionButton(
+                modifier = Modifier.offset(y = 64.dp),
                 containerColor = CustomColors.buttonPrimary,
-                contentColor = CustomColors.fontColor,
+                contentColor = CustomColors.secondary,
                 shape = CircleShape,
                 onClick = {
                     navController.navigate(Screen.AlarmDetailScreen.route)
@@ -120,6 +126,25 @@ fun AlarmScreen(
                 content={Icon(Icons.Filled.Add, contentDescription = "Add Alarm")}
             )
         },
-        floatingActionButtonPosition = FabPosition.Center
+        floatingActionButtonPosition = FabPosition.Center,
+        content = { innerPadding ->
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(CustomColors.surface)
+                    .padding(8.dp).padding(innerPadding),
+            ) {
+                items(10) { index ->
+                    AlarmCard(
+                        label = "Alarm $index",
+                        time = "10:00 AM",
+                        days = listOf("","","","W", "T", "F", "S"),
+                        isEnabled = index % 2 == 0,
+                        onToggle = { }
+                    )
+                }
+            }
+        },
     )
 }
