@@ -17,15 +17,15 @@ fun NavGraph(
         composable(Screen.AlarmScreen.route) {
             AlarmScreen(navController = navController)
         }
-//        composable(Screen.AlarmDetailScreen.route+ "?id={id}",
-//            arguments = listOf(navArgument("id") { nullable=true })
-//            ) {
-//            val id = it.arguments?.getString("id")?.toIntOrNull()
-//            if (id != null) {
-//               AlarmDetailScreen(navController = navController, id = id)
-//            } else {
-//                navController.navigate(Screen.AlarmScreen.route)
-//            }
-//        }
+        composable(Screen.AlarmDetailScreen.route+ "?id={id}",
+            arguments = listOf(navArgument("id") { nullable=true })
+            ) {
+            val id = it.arguments?.getString("id")?.toIntOrNull()
+            if (id != null) {
+                AlarmDetailsScreen(navController = navController, id = id)
+            } else {
+                navController.navigate(Screen.AlarmScreen.route)
+            }
+        }
     }
 }

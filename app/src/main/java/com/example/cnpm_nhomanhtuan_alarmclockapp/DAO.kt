@@ -1,6 +1,6 @@
 package com.example.cnpm_nhomanhtuan_alarmclockapp
-
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AlarmDao {
@@ -14,8 +14,8 @@ interface AlarmDao {
     suspend fun delete(alarm: Alarm)
 
     @Query("SELECT * FROM alarms WHERE id = :id")
-    suspend fun getAlarm(id: Int): Alarm?
+    fun getAlarmById(id: Int): Flow<Alarm>
 
     @Query("SELECT * FROM alarms")
-    suspend fun getAllAlarms(): List<Alarm>
+    fun getAllAlarms(): Flow<List<Alarm>>
 }
