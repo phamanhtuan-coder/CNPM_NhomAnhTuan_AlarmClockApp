@@ -1,4 +1,6 @@
 package com.example.cnpm_nhomanhtuan_alarmclockapp
+
+
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
@@ -18,4 +20,7 @@ interface AlarmDao {
 
     @Query("SELECT * FROM alarms")
     fun getAllAlarms(): Flow<List<Alarm>>
+
+    @Query("SELECT * FROM alarms WHERE label LIKE '%' || :query || '%'")
+    fun searchAlarms(query: String): Flow<List<Alarm>>
 }

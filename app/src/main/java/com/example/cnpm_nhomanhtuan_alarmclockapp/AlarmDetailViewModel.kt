@@ -70,9 +70,9 @@ class AlarmDetailViewModel(
         viewModelScope.launch {
             val alarm = Alarm(id, state.label, state.time, state.days, state.isEnabled)
             if (id > 0) {
-                alarmRepository.update(alarm)
+                alarmRepository.updateAlarm(alarm)
             } else {
-                alarmRepository.insert(alarm)
+                alarmRepository.insertAlarm(alarm)
             }
         }
     }

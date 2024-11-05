@@ -47,7 +47,7 @@ fun AlarmDetailsScreen(
                 // Alarm Label Field
                 Text(text = "Label", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 BasicTextField(
-                    value = alarmState.label.toString(), // Ensuring label is a String
+                    value = alarmState.label,
                     onValueChange = { viewModel.onChangeLabel(it) },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -63,7 +63,7 @@ fun AlarmDetailsScreen(
                 // Time Field (Placeholder)
                 Text(text = "Time", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 BasicTextField(
-                    value = alarmState.time.toString(), // Ensuring time is a String
+                    value = alarmState.time, // Ensuring time is a String
                     onValueChange = { viewModel.onChangeTime(it) },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -79,8 +79,8 @@ fun AlarmDetailsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    val daysOfWeek = DayOfWeek.values().toList()
-                    daysOfWeek.forEachIndexed { index, dayOfWeek ->
+                    val daysOfWeek = DayOfWeek.entries.toList()
+                    daysOfWeek.forEachIndexed { _, dayOfWeek ->
                         TextButton(
                             onClick = { viewModel.onToggleDay(dayOfWeek) }, // Pass the DayOfWeek enum
                             colors = ButtonDefaults.textButtonColors(
