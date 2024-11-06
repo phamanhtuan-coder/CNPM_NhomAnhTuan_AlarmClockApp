@@ -9,7 +9,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.stateIn
 
 @TypeConverters(Converters::class)
 @Database(entities = [Alarm::class], version = 1, exportSchema = false)
@@ -47,27 +50,43 @@ abstract class AlarmDatabase : RoomDatabase() {
         }
 
         suspend fun populateDatabase(alarmDao: AlarmDao) {
-            // Add any initial data here if needed, or leave this empty
-            alarmDao.insert(Alarm(id = 1, label = "Morning Alarm", time = "07:00", days = listOf("","M","T","W","T","F",""),isEnabled = true))
+
+            var alarm = Alarm(label = "Morning Alarm", time = "07:00 AM", days = listOf("M", "T", "W", "T", "F"), isEnabled = true)
+            alarmDao.insert(alarm)
+            alarm = Alarm(label = "Workout Alarm", time = "06:00 AM", days = listOf("M", "W", "F"), isEnabled = false)
+            alarmDao.insert(alarm)
         }
     }
 }
 
 class AlarmRepository(private val alarmDao: AlarmDao) {
 
-    val alarms: Flow<List<Alarm>> = alarmDao.getAllAlarms()
+    val alarms: StateFlow<List<Alarm>> = alarmDao.getAllAlarms().stateIn(
+        scope = CoroutineScope(Dispatchers.IO),
+        started = SharingStarted.Lazily,
+        initialValue = emptyList()
+    )
 
-    fun getAlarmById(id: Int): Flow<Alarm> = alarmDao.getAlarmById(id)
+    // Retrieves a single alarm by ID
+    fun getAlarmById(id: Int) = alarmDao.getAlarmById(id)
 
-    suspend fun insert(alarm: Alarm) {
-        alarmDao.insert(alarm)
-    }
-
-    suspend fun update(alarm: Alarm) {
+    // Updates an existing alarm in the database
+    suspend fun updateAlarm(alarm: Alarm) {
         alarmDao.update(alarm)
     }
 
-    suspend fun delete(alarm: Alarm) {
+    // Inserts a new alarm or replaces an existing one
+    suspend fun insertAlarm(alarm: Alarm) {
+        alarmDao.insert(alarm)
+    }
+
+    // Deletes an alarm from the database
+    suspend fun deleteAlarm(alarm: Alarm) {
         alarmDao.delete(alarm)
+    }
+
+    // Searches alarms by label
+    fun searchAlarms(query: String): Flow<List<Alarm>> {
+        return alarmDao.searchAlarms(query)
     }
 }

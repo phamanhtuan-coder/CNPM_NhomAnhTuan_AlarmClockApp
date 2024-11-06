@@ -27,9 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun AlarmScreen(
     navController: NavHostController,
-    viewModel: AlarmScreenViewModel = viewModel()
 ) {
-    val AlarmListState = viewModel.state
     Scaffold(
         topBar = {
             TopAppBar(
@@ -44,7 +42,9 @@ fun AlarmScreen(
                     containerColor = CustomColors.background,
                 ),
                 actions = {
-                    IconButton(onClick = {  }) {
+                    IconButton(onClick = {
+
+                    }) {
                         Icon(Icons.Filled.Menu, contentDescription = "Settings", tint = CustomColors.fontColor)
                     }
                 }
@@ -78,10 +78,14 @@ fun AlarmScreen(
                         horizontalArrangement = Arrangement.spacedBy(24.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        IconButton(onClick = { }) {
+                        IconButton(onClick = {
+
+                        }) {
                             Icon(Icons.Filled.Timer, contentDescription = "Timer", tint = CustomColors.fontColor)
                         }
-                        IconButton(onClick = {  }) {
+                        IconButton(onClick = {
+
+                        }) {
                             Icon(Icons.Filled.AvTimer, contentDescription = "Stopwatch", tint = CustomColors.fontColor)
                         }
                     }
@@ -108,15 +112,14 @@ fun AlarmScreen(
                     .padding(8.dp)
                     .padding(innerPadding),
             ) {
-                items(AlarmListState.alarms) { con ->
+                items (10){
                     AlarmCard(
-                        label = con.label,
-                        time = con.time,
-                        days = con.days,
-                        isEnabled = con.isEnabled,
-                        onToggle = { viewModel.toggleAlarm(con) }
-                    )
+                        label = "Alarm $it",
+                        time = "07:00",
+                        days =  listOf("", "M", "T", "W", "", "F", ""),
+                        isEnabled = it % 2 == 0,
 
+                    )
                 }
             }
         },

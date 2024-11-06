@@ -19,7 +19,7 @@ fun AlarmCard(
     time: String,
     days: List<String>,  // e.g., ["", "", "", "W", "T", "F", "S"]
     isEnabled: Boolean,
-    onToggle: (Boolean) -> Unit
+
 ) {
     var alarmEnabled by remember { mutableStateOf(isEnabled) }
     val daysOfWeek = listOf("S", "M", "T", "W", "T", "F", "S")
@@ -124,7 +124,7 @@ fun AlarmCard(
                     checked = alarmEnabled,
                     onCheckedChange = {
                         alarmEnabled = it
-                        onToggle(it)
+//                        onToggle(it)
                     },
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = CustomColors.onPrimary,

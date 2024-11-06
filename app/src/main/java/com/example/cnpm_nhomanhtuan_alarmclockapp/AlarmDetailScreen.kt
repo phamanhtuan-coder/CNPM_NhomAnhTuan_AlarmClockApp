@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -22,8 +21,7 @@ fun AlarmDetailsScreen(
     navController: NavHostController,
     id: Int = -1
 ) {
-    val viewModel: AlarmDetailViewModel = viewModel(factory = AlarmDetailViewModelFactory(id))
-    val alarmState = viewModel.state
+
 
     Scaffold(
         topBar = {
@@ -47,8 +45,10 @@ fun AlarmDetailsScreen(
                 // Alarm Label Field
                 Text(text = "Label", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 BasicTextField(
-                    value = alarmState.label,
-                    onValueChange = { viewModel.onChangeLabel(it) },
+                    value = "",
+                    onValueChange = {
+
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
@@ -63,8 +63,10 @@ fun AlarmDetailsScreen(
                 // Time Field (Placeholder)
                 Text(text = "Time", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 BasicTextField(
-                    value = alarmState.time, // Ensuring time is a String
-                    onValueChange = { viewModel.onChangeTime(it) },
+                    value ="", // Ensuring time is a String
+                    onValueChange = {
+
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
@@ -79,20 +81,7 @@ fun AlarmDetailsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    val daysOfWeek = DayOfWeek.entries.toList()
-                    daysOfWeek.forEachIndexed { _, dayOfWeek ->
-                        TextButton(
-                            onClick = { viewModel.onToggleDay(dayOfWeek) }, // Pass the DayOfWeek enum
-                            colors = ButtonDefaults.textButtonColors(
-                                contentColor = if (alarmState.selectedDays.contains(dayOfWeek))
-                                    MaterialTheme.colorScheme.primary
-                                else
-                                    Color.Gray
-                            )
-                        ) {
-                            Text(text = dayOfWeek.shortName) // Display the short name
-                        }
-                    }
+
                 }
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -104,8 +93,10 @@ fun AlarmDetailsScreen(
                     Text(text = "Enabled", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.weight(1f))
                     Switch(
-                        checked = alarmState.isEnabled,
-                        onCheckedChange = { viewModel.onToggleEnabled(it) }
+                        checked =true,
+                        onCheckedChange = {
+
+                        }
                     )
 
                 }
@@ -126,7 +117,7 @@ fun AlarmDetailsScreen(
                     Spacer(modifier = Modifier.width(16.dp))
                     Button(
                         onClick = {
-                            viewModel.saveAlarm()
+
                             navController.popBackStack()
                         },
                         modifier = Modifier.weight(1f)
