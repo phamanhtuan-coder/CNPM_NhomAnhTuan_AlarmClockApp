@@ -24,17 +24,7 @@ fun AlarmDetailsScreen(
 
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = if (id < 0) "Add New Alarm" else "Edit Alarm") },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.LightGray),
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            )
-        },
+
         content = { innerPadding ->
             Column(
                 modifier = Modifier
