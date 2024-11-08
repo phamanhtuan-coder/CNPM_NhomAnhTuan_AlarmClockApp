@@ -1,12 +1,15 @@
 package com.example.cnpm_nhomanhtuan_alarmclockapp
 
-import android.text.style.BackgroundColorSpan
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -38,13 +41,19 @@ fun AlarmDetailsScreen(
                 )
             )
         },
+        bottomBar = {
+            BottomActionBar(
+                onCancelClick = { navController.popBackStack() },
+                onSaveClick = { /* Thao tác khi nhấn Save */ }
+            )
+        },
         content = { paddingValues ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black)
                     .padding(paddingValues),
-                contentAlignment = Alignment.Center // Căn giữa toàn bộ nội dung
+                contentAlignment = Alignment.Center
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -65,10 +74,176 @@ fun AlarmDetailsScreen(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    AlarmSettingsCard()
                 }
             }
         }
     )
+}
+
+@Composable
+fun AlarmSettingsCard() {
+    var selectedDays by remember { mutableStateOf(mutableSetOf<Int>()) }
+
+    val selectedDaysText = remember(selectedDays) {
+        when {
+            selectedDays.containsAll(listOf(1, 2, 3, 4, 5)) && selectedDays.size == 5 -> "Weekdays"
+            selectedDays.containsAll(listOf(0, 6)) && selectedDays.size == 2 -> "Weekend"
+            selectedDays.size == 7 -> "Everyday"
+            else -> selectedDays.joinToString(", ") { dayIndex ->
+                when (dayIndex) {
+                    0 -> "Sun"
+                    1 -> "Mon"
+                    2 -> "Tue"
+                    3 -> "Wed"
+                    4 -> "Thu"
+                    5 -> "Fri"
+                    6 -> "Sat"
+                    else -> ""
+                }
+            }
+        }
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .fillMaxHeight(1f),
+        shape = RoundedCornerShape(
+            topStart = 16.dp,
+            topEnd = 16.dp
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF1E1E1E)
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = selectedDaysText,
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.Filled.CalendarMonth,
+                        contentDescription = "Calendar",
+                        tint = Color.Gray
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                listOf("S", "M", "T", "W", "T", "F", "S").forEachIndexed { index, day ->
+                    TextButton(
+                        onClick = {
+                            selectedDays = selectedDays.toMutableSet().apply {
+                                if (contains(index)) remove(index) else add(index)
+                            }
+                        },
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Text(
+                            text = day,
+                            color = if (selectedDays.contains(index)) Color.Red else Color.White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+
+            // Alarm Settings Items
+            AlarmSettingItem(title = "Alarm sound", value = "Alarm Army")
+            AlarmSettingItem(title = "Vibration", value = "Basic call")
+            AlarmSettingItem(title = "Snooze", value = "5 minutes, Forever")
+            AlarmSettingItem(title = "Alarm background", value = "")
+        }
+    }
+}
+
+@Composable
+fun AlarmSettingItem(title: String, value: String) {
+    var isChecked by remember { mutableStateOf(true) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column {
+            Text(text = title, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            if (value.isNotEmpty()) {
+                Text(text = value, color = Color.Gray, fontSize = 14.sp)
+            }
+        }
+
+        Switch(
+            checked = isChecked,
+            onCheckedChange = { isChecked = it },
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = Color(0xFFBB86FC),
+                uncheckedThumbColor = Color.Gray,
+                uncheckedTrackColor = Color.DarkGray
+            )
+        )
+    }
+}
+
+@Composable
+fun BottomActionBar(
+    onCancelClick: () -> Unit,
+    onSaveClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(32.dp)
+            .background(Color.Black),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TextButton(onClick = onCancelClick) {
+            Text(
+                text = "Cancel",
+                color = Color(0xFFBB86FC),
+                fontSize = 16.sp
+            )
+        }
+
+        TextButton(onClick = onSaveClick) {
+            Text(
+                text = "Save",
+                color = Color(0xFFBB86FC),
+                fontSize = 16.sp
+            )
+        }
+    }
 }
 
 @Composable
@@ -86,15 +261,13 @@ fun EndlessRollingPadlockTimePicker(
 
     val scope = rememberCoroutineScope()
 
-    // Thêm Box để căn giữa nội dung Row
     Box(
-        modifier = modifier.height(120.dp), // Đảm bảo chiều cao đồng đều giữa các cột
+        modifier = modifier.height(120.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // LazyColumn cho giờ
             LazyColumn(
                 state = hourState,
                 modifier = Modifier
@@ -117,7 +290,6 @@ fun EndlessRollingPadlockTimePicker(
                 }
             }
 
-            // Dấu ":"
             Text(
                 text = ":",
                 fontSize = 36.sp,
@@ -125,7 +297,6 @@ fun EndlessRollingPadlockTimePicker(
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 
-            // LazyColumn cho phút
             LazyColumn(
                 state = minuteState,
                 modifier = Modifier
@@ -150,7 +321,6 @@ fun EndlessRollingPadlockTimePicker(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // LazyColumn cho AM/PM
             LazyColumn(
                 state = amPmState,
                 modifier = Modifier
@@ -159,7 +329,7 @@ fun EndlessRollingPadlockTimePicker(
                     .background(Color.Black),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                items(amPmList.size * 100) { i -> // Lặp lại AM/PM để cuộn
+                items(amPmList.size * 100) { i ->
                     val amPm = amPmList[i % amPmList.size]
                     val isSelected = (i == amPmState.firstVisibleItemIndex + 1)
                     Text(
@@ -175,7 +345,6 @@ fun EndlessRollingPadlockTimePicker(
         }
     }
 
-    // Điều chỉnh vị trí cuộn sau khi cuộn dừng lại để giữ mục được chọn luôn ở giữa
     LaunchedEffect(hourState.isScrollInProgress) {
         if (!hourState.isScrollInProgress) {
             scope.launch {
@@ -203,7 +372,6 @@ fun EndlessRollingPadlockTimePicker(
         }
     }
 
-    // Cập nhật thời gian sau khi cuộn dừng
     DisposableEffect(hourState.firstVisibleItemIndex, minuteState.firstVisibleItemIndex, amPmState.firstVisibleItemIndex) {
         val selectedHour = hoursList[if (hourState.firstVisibleItemIndex % hoursList.size == 11) 0 else hourState.firstVisibleItemIndex % hoursList.size + 1]
         val selectedMinute = minutesList[if (minuteState.firstVisibleItemIndex % minutesList.size == 59) 0 else minuteState.firstVisibleItemIndex % minutesList.size + 1]
