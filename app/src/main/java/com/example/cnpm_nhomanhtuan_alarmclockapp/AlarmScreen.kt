@@ -98,7 +98,9 @@ fun AlarmScreen(
                 containerColor = CustomColors.buttonPrimary,
                 contentColor = CustomColors.secondary,
                 shape = CircleShape,
-                onClick = { },
+                onClick = {
+                    navController.navigate("${Screen.AlarmDetailScreen.route}?id=-1")
+                },
                 content = { Icon(Icons.Filled.Add, contentDescription = "Add Alarm") }
             )
         },
