@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.cnpm_nhomanhtuan_alarmclockapp"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -41,6 +41,15 @@ android {
 }
 
 dependencies {
+    implementation(platform("androidx.compose:compose-bom:2023.09.00"))
+
+    implementation ("androidx.compose.foundation:foundation")
+    implementation ("androidx.compose.material3:material3")
+    implementation ("androidx.compose.runtime:runtime")
+    implementation ("androidx.compose.ui:ui")
+    implementation ("androidx.compose.material:material-icons-extended")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("com.github.commandiron:WheelPickerCompose:1.1.11")
     implementation("androidx.navigation:navigation-compose:2.8.3")
     implementation("androidx.compose.material:material-icons-extended:1.7.5")
     implementation("androidx.room:room-runtime:2.6.1")
