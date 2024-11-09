@@ -21,13 +21,25 @@ import kotlinx.coroutines.launch
 
 data class Time(val hour: Int, val minute: Int, val amPm: String)
 
+val sampleAlarms = listOf(
+    AlarmData(id = 0, time = Time(1, 59, "AM"), days = setOf(1, 2, 3, 4, 5), name = "Work Alarm"),
+    AlarmData(id = 1, time = Time(9, 30, "PM"), days = setOf(0, 6), name = "Weekend Alarm"),
+    AlarmData(id = 2, time = Time(6, 45, "AM"), days = setOf(0, 1, 2, 3, 4, 5, 6), name = "Everyday Alarm")
+)
+
+data class AlarmData(val id: Int, val time: Time, val days: Set<Int>, val name: String)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmDetailsScreen(
     navController: NavHostController,
     id: Int = -1
 ) {
-    var selectedTime by remember { mutableStateOf(Time(6, 0, "AM")) }
+    val alarmData = sampleAlarms.find { it.id == id }
+
+    var selectedTime by remember { mutableStateOf(alarmData?.time ?: Time(6, 0, "AM")) }
+    var selectedDays by remember { mutableStateOf(alarmData?.days ?: mutableSetOf()) }
+    var alarmName by remember { mutableStateOf(TextFieldValue(alarmData?.name ?: "")) }
 
     Scaffold(
         topBar = {
@@ -42,9 +54,7 @@ fun AlarmDetailsScreen(
         bottomBar = {
             BottomActionBar(
                 onCancelClick = { navController.popBackStack() },
-                onSaveClick = {
-                    navController.popBackStack()
-                }
+                onSaveClick = { navController.popBackStack() }
             )
         },
         content = { paddingValues ->
@@ -61,9 +71,8 @@ fun AlarmDetailsScreen(
                 ) {
                     EndlessRollingPadlockTimePicker(
                         modifier = Modifier.fillMaxWidth(),
-                        onTimeSelected = { time ->
-                            selectedTime = time
-                        }
+                        onTimeSelected = { time -> selectedTime = time },
+                        initialTime = selectedTime
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -77,7 +86,7 @@ fun AlarmDetailsScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    AlarmSettingsCard()
+                    AlarmSettingsCard(selectedDays, alarmName, onDaysChange = { selectedDays = it }, onNameChange = { alarmName = it })
                 }
             }
         }
@@ -86,10 +95,12 @@ fun AlarmDetailsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlarmSettingsCard() {
-    var selectedDays by remember { mutableStateOf(mutableSetOf<Int>()) }
-    var alarmName by remember { mutableStateOf(TextFieldValue("")) }
-
+fun AlarmSettingsCard(
+    selectedDays: Set<Int>,
+    alarmName: TextFieldValue,
+    onDaysChange: (MutableSet<Int>) -> Unit,
+    onNameChange: (TextFieldValue) -> Unit
+) {
     val selectedDaysText = remember(selectedDays) {
         when {
             selectedDays.containsAll(listOf(1, 2, 3, 4, 5)) && selectedDays.size == 5 -> "Weekdays"
@@ -148,9 +159,10 @@ fun AlarmSettingsCard() {
                 listOf("S", "M", "T", "W", "T", "F", "S").forEachIndexed { index, day ->
                     TextButton(
                         onClick = {
-                            selectedDays = selectedDays.toMutableSet().apply {
+                            val newDays = selectedDays.toMutableSet().apply {
                                 if (contains(index)) remove(index) else add(index)
                             }
+                            onDaysChange(newDays)
                         },
                         contentPadding = PaddingValues(0.dp)
                     ) {
@@ -168,19 +180,11 @@ fun AlarmSettingsCard() {
 
             TextField(
                 value = alarmName,
-                onValueChange = { alarmName = it },
-                label = { Text(
-                    "Alarm name",
-                    color = Color.Gray,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(0.dp)
-                        .align(Alignment.Start)
-                )},
+                onValueChange = onNameChange,
+                label = { Text("Alarm name", color = Color.Gray) },
                 textStyle = LocalTextStyle.current.copy(color = Color.White),
                 singleLine = true,
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 colors = TextFieldDefaults.textFieldColors(
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
@@ -263,15 +267,16 @@ fun BottomActionBar(
 @Composable
 fun EndlessRollingPadlockTimePicker(
     modifier: Modifier = Modifier,
+    initialTime: Time = Time(6, 0, "AM"),
     onTimeSelected: (Time) -> Unit
 ) {
     val hoursList = (1..12).toList()
     val minutesList = (0..59).toList()
     val amPmList = listOf("AM", "PM")
 
-    val hourState = rememberLazyListState(initialFirstVisibleItemIndex = hoursList.indexOf(5) + hoursList.size * 50)
-    val minuteState = rememberLazyListState(initialFirstVisibleItemIndex = minutesList.indexOf(59) + minutesList.size * 50)
-    val amPmState = rememberLazyListState(initialFirstVisibleItemIndex = amPmList.indexOf("PM") + amPmList.size * 25)
+    val hourState = rememberLazyListState(initialFirstVisibleItemIndex = hoursList.indexOf(initialTime.hour-1) + hoursList.size * 50)
+    val minuteState = rememberLazyListState(initialFirstVisibleItemIndex = minutesList.indexOf(initialTime.minute-1) + minutesList.size * 50)
+    val amPmState = rememberLazyListState(initialFirstVisibleItemIndex = if(amPmList.indexOf(initialTime.amPm) == 1) 0 else 1 + amPmList.size * 50)
 
     val scope = rememberCoroutineScope()
 
