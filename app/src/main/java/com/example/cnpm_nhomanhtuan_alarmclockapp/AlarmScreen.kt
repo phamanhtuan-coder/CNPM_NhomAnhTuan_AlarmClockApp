@@ -114,13 +114,15 @@ fun AlarmScreen(
                     .padding(8.dp)
                     .padding(innerPadding),
             ) {
-                items (10){
+                items (10){ index ->
                     AlarmCard(
-                        label = "Alarm $it",
+                        label = "Alarm $index",
                         time = "07:00",
                         days =  listOf("", "M", "T", "W", "", "F", ""),
-                        isEnabled = it % 2 == 0,
-
+                        isEnabled = index % 2 == 0,
+                        onClick = {
+                            navController.navigate("${Screen.AlarmDetailScreen.route}?id=$index")
+                        }
                     )
                 }
             }

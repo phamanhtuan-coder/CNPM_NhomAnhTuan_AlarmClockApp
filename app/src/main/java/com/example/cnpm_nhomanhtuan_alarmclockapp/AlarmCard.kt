@@ -1,7 +1,9 @@
 package com.example.cnpm_nhomanhtuan_alarmclockapp
 
+import android.R.attr.onClick
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -19,7 +21,7 @@ fun AlarmCard(
     time: String,
     days: List<String>,  // e.g., ["", "", "", "W", "T", "F", "S"]
     isEnabled: Boolean,
-
+    onClick: () -> Unit
 ) {
     var alarmEnabled by remember { mutableStateOf(isEnabled) }
     val daysOfWeek = listOf("S", "M", "T", "W", "T", "F", "S")
@@ -37,7 +39,8 @@ fun AlarmCard(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .padding(8.dp)
-            .size(180.dp),
+            .size(180.dp)
+            .clickable { onClick() },
         colors = CardDefaults.cardColors(
             containerColor = CustomColors.background,
         )
