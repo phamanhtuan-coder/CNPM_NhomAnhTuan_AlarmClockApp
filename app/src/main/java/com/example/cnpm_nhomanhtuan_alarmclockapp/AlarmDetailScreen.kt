@@ -2,20 +2,18 @@ package com.example.cnpm_nhomanhtuan_alarmclockapp
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -44,7 +42,9 @@ fun AlarmDetailsScreen(
         bottomBar = {
             BottomActionBar(
                 onCancelClick = { navController.popBackStack() },
-                onSaveClick = { /* Thao tác khi nhấn Save */ }
+                onSaveClick = {
+                    navController.popBackStack()
+                }
             )
         },
         content = { paddingValues ->
@@ -84,9 +84,11 @@ fun AlarmDetailsScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmSettingsCard() {
     var selectedDays by remember { mutableStateOf(mutableSetOf<Int>()) }
+    var alarmName by remember { mutableStateOf(TextFieldValue("")) }
 
     val selectedDaysText = remember(selectedDays) {
         when {
@@ -113,13 +115,8 @@ fun AlarmSettingsCard() {
             .fillMaxWidth()
             .padding(8.dp)
             .fillMaxHeight(1f),
-        shape = RoundedCornerShape(
-            topStart = 16.dp,
-            topEnd = 16.dp
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1E1E1E)
-        )
+        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
     ) {
         Column(
             modifier = Modifier
@@ -140,14 +137,6 @@ fun AlarmSettingsCard() {
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
-
-                IconButton(onClick = {}) {
-                    Icon(
-                        imageVector = Icons.Filled.CalendarMonth,
-                        contentDescription = "Calendar",
-                        tint = Color.Gray
-                    )
-                }
             }
 
             Row(
@@ -175,7 +164,32 @@ fun AlarmSettingsCard() {
                 }
             }
 
-            // Alarm Settings Items
+            Spacer(modifier = Modifier.height(24.dp))
+
+            TextField(
+                value = alarmName,
+                onValueChange = { alarmName = it },
+                label = { Text(
+                    "Alarm name",
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(0.dp)
+                        .align(Alignment.Start)
+                )},
+                textStyle = LocalTextStyle.current.copy(color = Color.White),
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxSize(),
+                colors = TextFieldDefaults.textFieldColors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    cursorColor = Color.White,
+                    focusedIndicatorColor = Color.Gray,
+                    unfocusedIndicatorColor = Color.Gray,
+                    containerColor = Color.Transparent
+                )
+            )
             AlarmSettingItem(title = "Alarm sound", value = "Alarm Army")
             AlarmSettingItem(title = "Vibration", value = "Basic call")
             AlarmSettingItem(title = "Snooze", value = "5 minutes, Forever")
