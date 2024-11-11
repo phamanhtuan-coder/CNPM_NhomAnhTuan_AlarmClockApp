@@ -22,7 +22,9 @@ fun NavGraph(
             ) {
             val id = it.arguments?.getString("id")?.toIntOrNull()
             if (id != null) {
-                AlarmDetailsScreen(navController = navController, id = id)
+                AlarmDetailsScreen(
+                    navController = navController,
+                    id = id)
             } else {
                 navController.navigate(Screen.AlarmScreen.route)
             }

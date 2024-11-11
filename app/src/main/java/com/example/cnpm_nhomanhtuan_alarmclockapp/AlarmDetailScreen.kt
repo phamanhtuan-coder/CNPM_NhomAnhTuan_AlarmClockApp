@@ -1,6 +1,7 @@
 package com.example.cnpm_nhomanhtuan_alarmclockapp
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -30,9 +32,10 @@ val sampleAlarms = listOf(
 data class AlarmData(val id: Int, val time: Time, val days: Set<Int>, val name: String)
 
 @OptIn(ExperimentalMaterial3Api::class)
+//@Preview(showBackground=true)
 @Composable
 fun AlarmDetailsScreen(
-    navController: NavHostController,
+   navController: NavHostController,
     id: Int = -1
 ) {
     val alarmData = sampleAlarms.find { it.id == id }
@@ -53,10 +56,15 @@ fun AlarmDetailsScreen(
         },
         bottomBar = {
             BottomActionBar(
-                onCancelClick = { navController.popBackStack() },
-                onSaveClick = { navController.popBackStack() }
+                onCancelClick = {
+                    navController.popBackStack()
+                                },
+                onSaveClick = {
+                    navController.popBackStack()
+                }
             )
         },
+        contentColor = CustomColors.primary,
         content = { paddingValues ->
             Box(
                 modifier = Modifier
@@ -127,17 +135,17 @@ fun AlarmSettingsCard(
             .padding(8.dp)
             .fillMaxHeight(1f),
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
+        colors = CardDefaults.cardColors(containerColor =CustomColors.secondary)
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -176,7 +184,7 @@ fun AlarmSettingsCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             TextField(
                 value = alarmName,
@@ -184,20 +192,24 @@ fun AlarmSettingsCard(
                 label = { Text("Alarm name", color = Color.Gray) },
                 textStyle = LocalTextStyle.current.copy(color = Color.White),
                 singleLine = true,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .offset(x = (-14).dp),
                 colors = TextFieldDefaults.textFieldColors(
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
                     cursorColor = Color.White,
-                    focusedIndicatorColor = Color.Gray,
-                    unfocusedIndicatorColor = Color.Gray,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
                     containerColor = Color.Transparent
                 )
             )
+            Spacer(modifier = Modifier.height (8.dp))
+            HorizontalDivider(thickness = 1.dp)
             AlarmSettingItem(title = "Alarm sound", value = "Alarm Army")
             AlarmSettingItem(title = "Vibration", value = "Basic call")
             AlarmSettingItem(title = "Snooze", value = "5 minutes, Forever")
-            AlarmSettingItem(title = "Alarm background", value = "")
+
         }
     }
 }
@@ -224,10 +236,11 @@ fun AlarmSettingItem(title: String, value: String) {
             checked = isChecked,
             onCheckedChange = { isChecked = it },
             colors = SwitchDefaults.colors(
-                checkedThumbColor = Color.White,
-                checkedTrackColor = Color(0xFFBB86FC),
-                uncheckedThumbColor = Color.Gray,
-                uncheckedTrackColor = Color.DarkGray
+                checkedThumbColor = CustomColors.onPrimary,
+                uncheckedThumbColor = CustomColors.onSecondary,
+                //checkedTrackColor = Color(0xFFBB86FC),
+
+                //uncheckedTrackColor = Color.DarkGray
             )
         )
     }
@@ -249,7 +262,8 @@ fun BottomActionBar(
         TextButton(onClick = onCancelClick) {
             Text(
                 text = "Cancel",
-                color = Color(0xFFBB86FC),
+                //color = Color(0xFFBB86FC),
+                color = CustomColors.buttonPrimary,
                 fontSize = 16.sp
             )
         }
@@ -257,7 +271,8 @@ fun BottomActionBar(
         TextButton(onClick = onSaveClick) {
             Text(
                 text = "Save",
-                color = Color(0xFFBB86FC),
+                //color = Color(0xFFBB86FC),
+                color = CustomColors.buttonPrimary,
                 fontSize = 16.sp
             )
         }
