@@ -21,9 +21,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 
-
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
@@ -40,6 +37,12 @@ fun AlarmDetailsScreen(
     //var selectedTime by remember { mutableStateOf(if (id > 0) alarmState.time else Time(0,0,"")) }
 
     var selectedTime by remember { mutableStateOf(alarmState.time) }
+
+    LaunchedEffect(alarmState.time) {
+        selectedTime = alarmState.time
+    }
+
+//    var selectedTime by remember { mutableStateOf(alarmState.time) }
     var selectedDays by remember { mutableStateOf(alarmState.days) }
     var alarmName by remember { mutableStateOf(TextFieldValue(alarmState.label)) }
 
@@ -94,9 +97,8 @@ fun AlarmDetailsScreen(
                     EndlessRollingPadlockTimePicker(
                         modifier = Modifier.fillMaxWidth(),
                         onTimeSelected = { time -> selectedTime = time },
-                        initialTime = selectedTime
+                        initialTime = selectedTime,
                     )
-
 
                     Spacer(modifier = Modifier.height(24.dp))
 
@@ -304,14 +306,29 @@ fun EndlessRollingPadlockTimePicker(
     initialTime: Time ,
     onTimeSelected: (Time) -> Unit
 ) {
+//    val hoursList = (1..12).toList()
+//    val minutesList = (0..59).toList()
+//    val amPmList = listOf("AM", "PM")
+//
+//
+//    val hourState = rememberLazyListState(initialFirstVisibleItemIndex = hoursList.indexOf(initialTime.hour-1) + hoursList.size * 50)
+//    val minuteState = rememberLazyListState(initialFirstVisibleItemIndex = minutesList.indexOf(initialTime.minute-1) + minutesList.size * 50)
+//    val amPmState = rememberLazyListState(initialFirstVisibleItemIndex = if(amPmList.indexOf(initialTime.amPm) == 1) 0 else 1 + amPmList.size * 50)
+
     val hoursList = (1..12).toList()
-    val minutesList = (0..59).toList()
+    val minutesList = (1..60).toList()
     val amPmList = listOf("AM", "PM")
 
+    val hourState = rememberLazyListState()
+    val minuteState = rememberLazyListState()
+    val amPmState = rememberLazyListState()
 
-    val hourState = rememberLazyListState(initialFirstVisibleItemIndex = hoursList.indexOf(initialTime.hour-1) + hoursList.size * 50)
-    val minuteState = rememberLazyListState(initialFirstVisibleItemIndex = minutesList.indexOf(initialTime.minute-1) + minutesList.size * 50)
-    val amPmState = rememberLazyListState(initialFirstVisibleItemIndex = if(amPmList.indexOf(initialTime.amPm) == 1) 0 else 1 + amPmList.size * 50)
+    LaunchedEffect(initialTime) {
+        hourState.scrollToItem(hoursList.indexOf(initialTime.hour - 1) + hoursList.size * 50)
+        minuteState.scrollToItem(minutesList.indexOf(initialTime.minute - 1) + minutesList.size * 50)
+        amPmState.scrollToItem(if (initialTime.amPm == "AM") 1 else 0 + amPmList.size * 50)
+    }
+
 
     val scope = rememberCoroutineScope()
 
@@ -428,15 +445,18 @@ fun EndlessRollingPadlockTimePicker(
         }
     }
 
-    DisposableEffect(
-        hourState.firstVisibleItemIndex,
-        minuteState.firstVisibleItemIndex,
-        amPmState.firstVisibleItemIndex
-    ) {
-        val selectedHour = hoursList[if (hourState.firstVisibleItemIndex % hoursList.size == 11) 0 else hourState.firstVisibleItemIndex % hoursList.size + 1]
-        val selectedMinute = minutesList[if (minuteState.firstVisibleItemIndex % minutesList.size == 59) 0 else minuteState.firstVisibleItemIndex % minutesList.size + 1]
-        val selectedAmPm = amPmList[if (amPmState.firstVisibleItemIndex % amPmList.size == 1) 0 else 1]
-        onTimeSelected(Time(selectedHour, selectedMinute, selectedAmPm))
-        onDispose { }
+    LaunchedEffect(hourState.isScrollInProgress, minuteState.isScrollInProgress, amPmState.isScrollInProgress) {
+        if (!hourState.isScrollInProgress && !minuteState.isScrollInProgress && !amPmState.isScrollInProgress) {
+            // Tính chỉ số dựa vào vị trí hiện tại, thêm +1 để lấy mục kế tiếp chính xác
+            val selectedHour = hoursList[(hourState.firstVisibleItemIndex + 1) % hoursList.size]
+            val selectedMinute = minutesList[(minuteState.firstVisibleItemIndex + 1) % minutesList.size]
+            val selectedAmPm = amPmList[(amPmState.firstVisibleItemIndex + 1) % amPmList.size]
+
+            onTimeSelected(Time(selectedHour, selectedMinute, selectedAmPm))
+        }
     }
+
+
+
+
 }
