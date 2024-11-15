@@ -15,19 +15,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 
-data class Time(val hour: Int, val minute: Int, val amPm: String)
+//data class Time(val hour: Int, val minute: Int, val amPm: String)
 
-val sampleAlarms = listOf(
-    AlarmData(id = 0, time = Time(1, 59, "AM"), days = setOf(1, 2, 3, 4, 5), name = "Work Alarm"),
-    AlarmData(id = 1, time = Time(9, 30, "PM"), days = setOf(0, 6), name = "Weekend Alarm"),
-    AlarmData(id = 2, time = Time(6, 45, "AM"), days = setOf(0, 1, 2, 3, 4, 5, 6), name = "Everyday Alarm")
-)
+//val sampleAlarms = listOf(
+//    AlarmData(id = 0, time = Time(1, 59, "AM"), days = setOf(1, 2, 3, 4, 5), name = "Work Alarm"),
+//    AlarmData(id = 1, time = Time(9, 30, "PM"), days = setOf(0, 6), name = "Weekend Alarm"),
+//    AlarmData(id = 2, time = Time(6, 45, "AM"), days = setOf(0, 1, 2, 3, 4, 5, 6), name = "Everyday Alarm")
+//)
 
 data class AlarmData(val id: Int, val time: Time, val days: Set<Int>, val name: String)
 
@@ -36,13 +36,18 @@ data class AlarmData(val id: Int, val time: Time, val days: Set<Int>, val name: 
 @Composable
 fun AlarmDetailsScreen(
    navController: NavHostController,
-    id: Int = -1
+    id: Int = -1,
 ) {
-    val alarmData = sampleAlarms.find { it.id == id }
+    var viewModel = viewModel<AlarmDetailViewModel>(
+        factory = AlarmDetailViewModelFactor(id)
+    )
+    var alarmState = viewModel.state
 
-    var selectedTime by remember { mutableStateOf(alarmData?.time ?: Time(6, 0, "AM")) }
-    var selectedDays by remember { mutableStateOf(alarmData?.days ?: mutableSetOf()) }
-    var alarmName by remember { mutableStateOf(TextFieldValue(alarmData?.name ?: "")) }
+    //val alarmData = sampleAlarms.find { it.id == id }
+    val defaultTime = Time(6, 0, "AM")
+    var selectedTime by remember { mutableStateOf(alarmState.time ?: Time(6, 0, "AM")) }
+    var selectedDays by remember { mutableStateOf(alarmState.days ?: mutableSetOf()) }
+    var alarmName by remember { mutableStateOf(TextFieldValue(alarmState.label ?: "")) }
 
     Scaffold(
         topBar = {
@@ -60,6 +65,25 @@ fun AlarmDetailsScreen(
                     navController.popBackStack()
                                 },
                 onSaveClick = {
+                    if(id > 0){
+                        var alarm = Alarm(
+                            id,
+                            alarmState.label,
+                            alarmState.time,
+                            alarmState.days,
+                            alarmState.isEnabled
+                        )
+                        viewModel.updateAlarm(alarm)
+                    }
+                    else{
+                        var alarm = Alarm(
+                            label = alarmName.text,
+                            time = alarmState.time ,
+                            days = alarmState.days,
+                            isEnabled = true
+                        )
+                        viewModel.insertAlarm(alarm)
+                    }
                     navController.popBackStack()
                 }
             )
@@ -85,16 +109,20 @@ fun AlarmDetailsScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    Text(
-                        text = "Selected Time: ${selectedTime.hour}:${(selectedTime.minute).toString().padStart(2, '0')} ${selectedTime.amPm}",
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+//                    Text(
+//                        text = "Selected Time: ${(selectedTime as Time).hour}:${((selectedTime as Time).minute).toString().padStart(2, '0')} ${(selectedTime as Time).amPm}",
+//                        color = Color.White,
+//                        fontSize = 18.sp,
+//                        fontWeight = FontWeight.Bold
+//                    )
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    AlarmSettingsCard(selectedDays, alarmName, onDaysChange = { selectedDays = it }, onNameChange = { alarmName = it })
+//                    AlarmSettingsCard(selectedDays,
+//                        alarmName = alarmName,
+//                        onDaysChange = selectedDays,
+//                        onNameChange = { alarmName = it }
+//                    )
                 }
             }
         }

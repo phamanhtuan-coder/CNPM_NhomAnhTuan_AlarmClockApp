@@ -14,8 +14,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.stateIn
 
-@TypeConverters(Converters::class)
+
 @Database(entities = [Alarm::class], version = 1, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class AlarmDatabase : RoomDatabase() {
 
     abstract val alarmDao: AlarmDao
@@ -31,7 +32,8 @@ abstract class AlarmDatabase : RoomDatabase() {
                     AlarmDatabase::class.java,
                     "alarm_database"
                 )
-                    .addCallback(AlarmDatabaseCallback())
+                    .fallbackToDestructiveMigration() // Thêm dòng này để xóa dữ liệu cũ khi thay đổi schema
+                    .addCallback(AlarmDatabaseCallback()) // Giữ lại callback nếu cần
                     .build().also {
                         INSTANCE = it
                     }
@@ -43,20 +45,16 @@ abstract class AlarmDatabase : RoomDatabase() {
                 super.onCreate(db)
                 INSTANCE?.let { database ->
                     CoroutineScope(Dispatchers.IO).launch {
-                        populateDatabase(database.alarmDao)
+                        // Xử lý công việc nếu cần sau khi tạo cơ sở dữ liệu
                     }
                 }
             }
         }
-
-        suspend fun populateDatabase(alarmDao: AlarmDao) {
-
-            var alarm = Alarm(label = "Morning Alarm", time = "07:00 AM", days = listOf("M", "T", "W", "T", "F"), isEnabled = true)
-            alarmDao.insert(alarm)
-            alarm = Alarm(label = "Workout Alarm", time = "06:00 AM", days = listOf("M", "W", "F"), isEnabled = false)
-            alarmDao.insert(alarm)
-        }
     }
+
+
+
+
 }
 
 class AlarmRepository(private val alarmDao: AlarmDao) {
