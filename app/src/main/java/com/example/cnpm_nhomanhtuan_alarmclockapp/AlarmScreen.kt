@@ -126,6 +126,9 @@ fun AlarmScreen(
                         isEnabled = it.isEnabled,
                         onClick = {
                             navController.navigate("${Screen.AlarmDetailScreen.route}?id=${it.id}")
+                        },
+                        onDelete = {
+                            viewModel.deleteAlarm(it)
                         }
 
                     )

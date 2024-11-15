@@ -6,6 +6,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,7 +23,8 @@ fun AlarmCard(
     time: Time = Time(0, 0, amPm = ""),
     days: List<String>,  // e.g., ["", "", "", "W", "T", "F", "S"]
     isEnabled: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onDelete:() -> Unit
 ) {
     var alarmEnabled by remember { mutableStateOf(isEnabled) }
     val daysOfWeek = listOf("S", "M", "T", "W", "T", "F", "S")
@@ -64,7 +67,7 @@ fun AlarmCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${time.hour} : ${time.minute} ",
+                    text = "${time.hour} : ${time.minute.toString().padStart(2, '0')} ",
                     fontSize = 16.sp,  // Larger font size for time
                     fontWeight = FontWeight.Bold,
                     color = if (alarmEnabled) CustomColors.onPrimary else CustomColors.fontColor,
@@ -123,17 +126,23 @@ fun AlarmCard(
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Switch(
-                    checked = alarmEnabled,
-                    onCheckedChange = {
-                        alarmEnabled = it
+                Row (modifier = Modifier.fillMaxWidth()){
+                    IconButton(onClick = onDelete) {
+                        Icon(imageVector = Icons.Filled.Delete, contentDescription = "")
+                    }
+                    Switch(
+                        checked = alarmEnabled,
+                        onCheckedChange = {
+                            alarmEnabled = it
 //                        onToggle(it)
-                    },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = CustomColors.onPrimary,
-                        uncheckedThumbColor = CustomColors.onSecondary,
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = CustomColors.onPrimary,
+                            uncheckedThumbColor = CustomColors.onSecondary,
+                        )
                     )
-                )
+                }
+
             }
         }
     }

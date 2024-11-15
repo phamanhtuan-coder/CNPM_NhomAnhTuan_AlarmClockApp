@@ -37,8 +37,10 @@ fun AlarmDetailsScreen(
     var alarmState = viewModel.state
 
     //val alarmData = sampleAlarms.find { it.id == id }
+    //var selectedTime by remember { mutableStateOf(if (id > 0) alarmState.time else Time(0,0,"")) }
+
     var selectedTime by remember { mutableStateOf(alarmState.time) }
-   // var selectedDays by remember { mutableStateOf(alarmState.days) }
+    var selectedDays by remember { mutableStateOf(alarmState.days) }
     var alarmName by remember { mutableStateOf(TextFieldValue(alarmState.label)) }
 
     Scaffold(
@@ -57,23 +59,16 @@ fun AlarmDetailsScreen(
                     navController.popBackStack()
                                 },
                 onSaveClick = {
-                    if(id > 0){
-                        var alarm = Alarm(
-                            id,
-                            alarmState.label,
-                            alarmState.time,
-                            alarmState.days,
-                            alarmState.isEnabled
-                        )
+                    val alarm = Alarm(
+                        id = if (id > 0) id else 0,
+                        label = alarmName.text,
+                        time = selectedTime,
+                        days = alarmState.days,
+                        isEnabled = true
+                    )
+                    if (id > 0) {
                         viewModel.updateAlarm(alarm)
-                    }
-                    else{
-                        var alarm = Alarm(
-                            label = alarmName.text,
-                            time = selectedTime,
-                            days = alarmState.days,
-                            isEnabled = true
-                        )
+                    } else {
                         viewModel.insertAlarm(alarm)
                     }
                     navController.popBackStack()
@@ -99,14 +94,14 @@ fun AlarmDetailsScreen(
                     EndlessRollingPadlockTimePicker(
                         modifier = Modifier.fillMaxWidth(),
                         onTimeSelected = { time -> selectedTime = time },
-                        initialTime = if (id > 0) alarmState.time else selectedTime // Điều chỉnh logic này
+                        initialTime = selectedTime
                     )
 
 
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Text(
-                        text = "Selected Time: ${selectedTime.hour}:${(selectedTime.minute).toString().padStart(2, '0')} ${(selectedTime as Time).amPm}",
+                        text = "Selected Time: ${selectedTime.hour}:${(selectedTime.minute).toString().padStart(2, '0')} ${selectedTime.amPm}",
                         color = Color.White,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
@@ -314,7 +309,6 @@ fun EndlessRollingPadlockTimePicker(
     val amPmList = listOf("AM", "PM")
 
 
-
     val hourState = rememberLazyListState(initialFirstVisibleItemIndex = hoursList.indexOf(initialTime.hour-1) + hoursList.size * 50)
     val minuteState = rememberLazyListState(initialFirstVisibleItemIndex = minutesList.indexOf(initialTime.minute-1) + minutesList.size * 50)
     val amPmState = rememberLazyListState(initialFirstVisibleItemIndex = if(amPmList.indexOf(initialTime.amPm) == 1) 0 else 1 + amPmList.size * 50)
@@ -434,7 +428,11 @@ fun EndlessRollingPadlockTimePicker(
         }
     }
 
-    DisposableEffect(hourState.firstVisibleItemIndex, minuteState.firstVisibleItemIndex, amPmState.firstVisibleItemIndex) {
+    DisposableEffect(
+        hourState.firstVisibleItemIndex,
+        minuteState.firstVisibleItemIndex,
+        amPmState.firstVisibleItemIndex
+    ) {
         val selectedHour = hoursList[if (hourState.firstVisibleItemIndex % hoursList.size == 11) 0 else hourState.firstVisibleItemIndex % hoursList.size + 1]
         val selectedMinute = minutesList[if (minuteState.firstVisibleItemIndex % minutesList.size == 59) 0 else minuteState.firstVisibleItemIndex % minutesList.size + 1]
         val selectedAmPm = amPmList[if (amPmState.firstVisibleItemIndex % amPmList.size == 1) 0 else 1]

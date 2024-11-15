@@ -31,14 +31,6 @@ class AlarmDetailViewModel (
         }
     }
 
-    fun onChangeDays(newValue:List<String> = emptyList()){
-        state = state.copy(days = newValue)
-    }
-
-    fun onChangeName(newValue: String){
-        state = state.copy(label = newValue)
-    }
-
     fun insertAlarm(alarm :Alarm){
         viewModelScope.launch {
             alarmRepository.insertAlarm(alarm = alarm)
