@@ -14,14 +14,15 @@ class AlarmDetailViewModel (
     private val alarmRepository:AlarmRepository = Graph.repository
 ):ViewModel(){
     var state by mutableStateOf(AlarmState())
-        private set
+       
     init {
         if(alarmId > 0){
             viewModelScope.launch {
                 alarmRepository.getAlarmById(alarmId).collectLatest {
                     state=state.copy(
+                        id = it.id,
                         label = it.label,
-                        time = it.time as Time,
+                        time = it.time ,
                         days = it.days,
                         isEnabled = it.isEnabled
                     )
@@ -58,8 +59,9 @@ class AlarmDetailViewModelFactor(private val id:Int) : ViewModelProvider.Factory
 }
 
 data class AlarmState(
-    val label:String = "",
-    val time: Time = Time(6, 0, amPm = "AM"),
-    val days:List<String> = emptyList(),
-    val isEnabled: Boolean = false
+    var id:Int=0,
+    var label:String = "",
+    var time: Time = Time(0, 0, amPm = ""),
+    var days:List<String> = emptyList(),
+    var isEnabled: Boolean = false
 )

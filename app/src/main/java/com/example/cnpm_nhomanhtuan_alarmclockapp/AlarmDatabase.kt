@@ -71,11 +71,13 @@ class AlarmRepository(private val alarmDao: AlarmDao) {
     // Updates an existing alarm in the database
     suspend fun updateAlarm(alarm: Alarm) {
         alarmDao.update(alarm)
+        alarmDao.getAllAlarms()
     }
 
     // Inserts a new alarm or replaces an existing one
     suspend fun insertAlarm(alarm: Alarm) {
         alarmDao.insert(alarm)
+        alarmDao.getAllAlarms()
     }
 
     // Deletes an alarm from the database

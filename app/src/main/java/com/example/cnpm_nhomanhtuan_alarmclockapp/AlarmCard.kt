@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun AlarmCard(
     label: String,
-    time: Time = Time(6, 0, amPm = "AM"),
+    time: Time = Time(0, 0, amPm = ""),
     days: List<String>,  // e.g., ["", "", "", "W", "T", "F", "S"]
     isEnabled: Boolean,
     onClick: () -> Unit
@@ -64,7 +64,7 @@ fun AlarmCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${time.hour} : ${time.minute} ${time.amPm}",
+                    text = "${time.hour} : ${time.minute} ",
                     fontSize = 16.sp,  // Larger font size for time
                     fontWeight = FontWeight.Bold,
                     color = if (alarmEnabled) CustomColors.onPrimary else CustomColors.fontColor,
@@ -72,7 +72,7 @@ fun AlarmCard(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "AM",
+                    text = time.amPm,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = if (alarmEnabled) CustomColors.onPrimary else CustomColors.fontColor,

@@ -21,18 +21,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 
-//data class Time(val hour: Int, val minute: Int, val amPm: String)
 
-//val sampleAlarms = listOf(
-//    AlarmData(id = 0, time = Time(1, 59, "AM"), days = setOf(1, 2, 3, 4, 5), name = "Work Alarm"),
-//    AlarmData(id = 1, time = Time(9, 30, "PM"), days = setOf(0, 6), name = "Weekend Alarm"),
-//    AlarmData(id = 2, time = Time(6, 45, "AM"), days = setOf(0, 1, 2, 3, 4, 5, 6), name = "Everyday Alarm")
-//)
 
-data class AlarmData(val id: Int, val time: Time, val days: Set<Int>, val name: String)
 
 @OptIn(ExperimentalMaterial3Api::class)
-//@Preview(showBackground=true)
+
 @Composable
 fun AlarmDetailsScreen(
    navController: NavHostController,
@@ -44,10 +37,9 @@ fun AlarmDetailsScreen(
     var alarmState = viewModel.state
 
     //val alarmData = sampleAlarms.find { it.id == id }
-    val defaultTime = Time(6, 0, "AM")
-    var selectedTime by remember { mutableStateOf(alarmState.time ?: Time(6, 0, "AM")) }
-    var selectedDays by remember { mutableStateOf(alarmState.days ?: mutableSetOf()) }
-    var alarmName by remember { mutableStateOf(TextFieldValue(alarmState.label ?: "")) }
+    var selectedTime by remember { mutableStateOf(alarmState.time) }
+   // var selectedDays by remember { mutableStateOf(alarmState.days) }
+    var alarmName by remember { mutableStateOf(TextFieldValue(alarmState.label)) }
 
     Scaffold(
         topBar = {
@@ -78,7 +70,7 @@ fun AlarmDetailsScreen(
                     else{
                         var alarm = Alarm(
                             label = alarmName.text,
-                            time = alarmState.time ,
+                            time = selectedTime,
                             days = alarmState.days,
                             isEnabled = true
                         )
@@ -90,6 +82,7 @@ fun AlarmDetailsScreen(
         },
         contentColor = CustomColors.primary,
         content = { paddingValues ->
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -101,20 +94,23 @@ fun AlarmDetailsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
+                    Text(text=alarmState.time.toString(), color = Color.White)
+                    Text(text=selectedTime.toString(), color = Color.White)
                     EndlessRollingPadlockTimePicker(
                         modifier = Modifier.fillMaxWidth(),
                         onTimeSelected = { time -> selectedTime = time },
-                        initialTime = selectedTime
+                        initialTime = if (id > 0) alarmState.time else selectedTime // Điều chỉnh logic này
                     )
+
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-//                    Text(
-//                        text = "Selected Time: ${(selectedTime as Time).hour}:${((selectedTime as Time).minute).toString().padStart(2, '0')} ${(selectedTime as Time).amPm}",
-//                        color = Color.White,
-//                        fontSize = 18.sp,
-//                        fontWeight = FontWeight.Bold
-//                    )
+                    Text(
+                        text = "Selected Time: ${selectedTime.hour}:${(selectedTime.minute).toString().padStart(2, '0')} ${(selectedTime as Time).amPm}",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
 
                     Spacer(modifier = Modifier.height(24.dp))
 
@@ -310,18 +306,22 @@ fun BottomActionBar(
 @Composable
 fun EndlessRollingPadlockTimePicker(
     modifier: Modifier = Modifier,
-    initialTime: Time = Time(6, 0, "AM"),
+    initialTime: Time ,
     onTimeSelected: (Time) -> Unit
 ) {
     val hoursList = (1..12).toList()
     val minutesList = (0..59).toList()
     val amPmList = listOf("AM", "PM")
 
+
+
     val hourState = rememberLazyListState(initialFirstVisibleItemIndex = hoursList.indexOf(initialTime.hour-1) + hoursList.size * 50)
     val minuteState = rememberLazyListState(initialFirstVisibleItemIndex = minutesList.indexOf(initialTime.minute-1) + minutesList.size * 50)
     val amPmState = rememberLazyListState(initialFirstVisibleItemIndex = if(amPmList.indexOf(initialTime.amPm) == 1) 0 else 1 + amPmList.size * 50)
 
     val scope = rememberCoroutineScope()
+
+
 
     Box(
         modifier = modifier.height(120.dp),

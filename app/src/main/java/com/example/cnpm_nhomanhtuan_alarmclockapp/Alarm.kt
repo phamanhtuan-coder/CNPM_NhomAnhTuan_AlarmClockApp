@@ -13,7 +13,7 @@ data class Alarm(
     @ColumnInfo(name = "label")
     val label: String="",
     @ColumnInfo(name = "time")
-    val time: Time = Time(6,0, "AM"),  // Format: "HH:mm AM/PM"
+    val time: Time = Time(0,0, ""),  // Format: "HH:mm AM/PM"
     @ColumnInfo(name = "days")
     val days: List<String> = emptyList(),  // ["S", "M", "T", "W", "T", "F", "S"], empty string if day not selected
     @ColumnInfo(name = "is_enabled")
