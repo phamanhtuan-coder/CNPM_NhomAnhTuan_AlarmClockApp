@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.alarmapp.Alarm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +25,18 @@ abstract class AlarmDatabase : RoomDatabase() {
     companion object {
         @Volatile
         private var INSTANCE: AlarmDatabase? = null
+
+        fun getInstance(context: Context): AlarmDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    AlarmDatabase::class.java,
+                    "alarm_database"
+                ).build()
+                INSTANCE = instance
+                instance
+            }
+        }
 
         fun getDatabase(context: Context): AlarmDatabase {
             return INSTANCE ?: synchronized(this) {

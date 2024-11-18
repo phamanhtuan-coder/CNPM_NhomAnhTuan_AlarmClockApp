@@ -15,19 +15,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-            setContent {
-                CNPM_NhomAnhTuan_AlarmClockAppTheme {
-
-                        Surface(
-                            modifier = Modifier.fillMaxSize(),
-                            color = MaterialTheme.colorScheme.background
-                        ) {
-                            val navController = rememberNavController()
-                            NavGraph(
-                                navController = navController
-                            )
-                        }
-
+        setContent {
+            CNPM_NhomAnhTuan_AlarmClockAppTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    val navController = rememberNavController()
+                    NavGraph(navController = navController)
+                }
             }
         }
     }

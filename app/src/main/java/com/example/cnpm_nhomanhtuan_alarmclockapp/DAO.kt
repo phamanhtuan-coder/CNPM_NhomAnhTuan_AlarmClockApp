@@ -2,6 +2,7 @@ package com.example.cnpm_nhomanhtuan_alarmclockapp
 
 
 import androidx.room.*
+import com.example.alarmapp.Alarm
 import kotlinx.coroutines.flow.Flow
 
 @Dao

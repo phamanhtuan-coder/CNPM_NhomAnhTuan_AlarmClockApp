@@ -1,6 +1,5 @@
 package com.example.cnpm_nhomanhtuan_alarmclockapp
 
-import android.R.attr.onClick
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.alarmapp.Time
 
 @Composable
 fun AlarmCard(

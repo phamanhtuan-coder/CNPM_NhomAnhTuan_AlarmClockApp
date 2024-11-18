@@ -6,6 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.alarmapp.Alarm
+import com.example.alarmapp.Time
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -53,7 +55,7 @@ class AlarmDetailViewModelFactor(private val id:Int) : ViewModelProvider.Factory
 data class AlarmState(
     var id:Int=0,
     var label:String = "",
-    var time: Time = Time(0, 0, amPm = ""),
+    var time: Time = Time(0, 0, amPm = "AM"),
     var days:List<String> = emptyList(),
     var isEnabled: Boolean = false
 )

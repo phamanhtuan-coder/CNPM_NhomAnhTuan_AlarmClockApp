@@ -12,6 +12,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.alarmapp.Alarm
+import com.example.alarmapp.Time
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
 
@@ -74,7 +78,7 @@ fun AlarmDetailsScreen(
                         id = if (id > 0) id else 0,
                         label = alarmName.text,
                         time = selectedTime,
-                        days =selectedDays.toList(),
+                        days = selectedDays.toList(),
                         isEnabled = true
                     )
                     if (id > 0) {
@@ -82,8 +86,18 @@ fun AlarmDetailsScreen(
                     } else {
                         viewModel.insertAlarm(alarm)
                     }
+
+                    // Lên lịch báo thức
+                    AlarmScheduler.scheduleAlarm(
+                        context = navController.context,
+                        alarmId = alarm.id,
+                        hour = selectedTime.hour,
+                        minute = selectedTime.minute
+                    )
+
                     navController.popBackStack()
                 }
+
             )
         },
         contentColor = CustomColors.primary,
