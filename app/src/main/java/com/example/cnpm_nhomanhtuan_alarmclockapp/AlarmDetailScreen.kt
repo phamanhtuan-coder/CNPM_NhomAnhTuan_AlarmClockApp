@@ -34,8 +34,6 @@ fun AlarmDetailsScreen(
     var alarmState = viewModel.state
 
     //val alarmData = sampleAlarms.find { it.id == id }
-    //var selectedTime by remember { mutableStateOf(if (id > 0) alarmState.time else Time(0,0,"")) }
-
     var selectedTime by remember { mutableStateOf(alarmState.time) }
 
     LaunchedEffect(alarmState.time) {
@@ -43,9 +41,14 @@ fun AlarmDetailsScreen(
     }
 
 //    var selectedTime by remember { mutableStateOf(alarmState.time) }
-    var selectedDays by remember { mutableStateOf(alarmState.days) }
+    var selectedDays by remember { mutableStateOf(setOf<Int>()) }
+    //var selectedDays by remember { mutableStateOf(alarmState.days.toSet()) }
     var alarmName by remember { mutableStateOf(TextFieldValue(alarmState.label)) }
-
+//    LaunchedEffect(alarmState) {
+//        selectedTime = alarmState.time
+//        selectedDays = alarmState.days
+//        alarmName = TextFieldValue(alarmState.label)
+//    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -66,7 +69,7 @@ fun AlarmDetailsScreen(
                         id = if (id > 0) id else 0,
                         label = alarmName.text,
                         time = selectedTime,
-                        days = alarmState.days,
+                        days = listOf(selectedDays.toString()),
                         isEnabled = true
                     )
                     if (id > 0) {
@@ -92,8 +95,8 @@ fun AlarmDetailsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text(text=alarmState.time.toString(), color = Color.White)
-                    Text(text=selectedTime.toString(), color = Color.White)
+                    Text(text=alarmState.days.toString(), color = Color.White)
+                    Text(text=selectedDays.toString(), color = Color.White)
                     EndlessRollingPadlockTimePicker(
                         modifier = Modifier.fillMaxWidth(),
                         onTimeSelected = { time -> selectedTime = time },
@@ -111,11 +114,12 @@ fun AlarmDetailsScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-//                    AlarmSettingsCard(selectedDays,
-//                        alarmName = alarmName,
-//                        onDaysChange = selectedDays,
-//                        onNameChange = { alarmName = it }
-//                    )
+                    AlarmSettingsCard(
+                        selectedDays = selectedDays,
+                        alarmName = alarmName,
+                        onDaysChange = { updateDays -> selectedDays = updateDays},
+                        onNameChange = { updatedName -> alarmName = updatedName }
+                    )
                 }
             }
         }
@@ -127,7 +131,7 @@ fun AlarmDetailsScreen(
 fun AlarmSettingsCard(
     selectedDays: Set<Int>,
     alarmName: TextFieldValue,
-    onDaysChange: (MutableSet<Int>) -> Unit,
+    onDaysChange: (Set<Int>) -> Unit,
     onNameChange: (TextFieldValue) -> Unit
 ) {
     val selectedDaysText = remember(selectedDays) {

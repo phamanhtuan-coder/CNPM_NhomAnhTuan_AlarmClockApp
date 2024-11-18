@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -32,6 +31,7 @@ fun AlarmScreen(
         modelClass = AlarmScreenViewModel::class.java
     )
     var alarmScreenState = viewModel.state
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -122,7 +122,7 @@ fun AlarmScreen(
                     AlarmCard(
                         label = "Alarm ${it.label}",
                         time = it.time,
-                        days =  listOf("", "M", "T", "W", "", "F", ""),
+                        days =  it.days, //listOf("", "M", "T", "W", "", "F", "")
                         isEnabled = it.isEnabled,
                         onClick = {
                             navController.navigate("${Screen.AlarmDetailScreen.route}?id=${it.id}")
@@ -132,10 +132,9 @@ fun AlarmScreen(
                         }
 
                     )
-                    Text(text=it.id.toString())
-
                 }
             }
         },
 
-    )}
+    )
+}

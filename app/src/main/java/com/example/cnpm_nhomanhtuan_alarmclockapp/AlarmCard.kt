@@ -33,11 +33,13 @@ fun AlarmCard(
     val selectedDays = days.mapIndexedNotNull { index, day ->
         if (day.isNotBlank()) daysOfWeek[index] else null
     }
+    //val selectedDays = days.filter { it.isNotEmpty() }
 
     // Check if all days are selected
+//    val allDaysSelected = selectedDays.size == 7 && selectedDays.containsAll(daysOfWeek)
+//    val displayDays = if (selectedDays.size == 7 && selectedDays.containsAll(daysOfWeek)) "Everyday" else null
     val allDaysSelected = selectedDays.size == 7 && selectedDays.containsAll(daysOfWeek)
-    val displayDays = if (allDaysSelected) "Everyday" else null
-
+    val displayDays = if (allDaysSelected) "Everyday" else selectedDays.filter { it.isNotEmpty() }.joinToString(", ")
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
@@ -98,7 +100,7 @@ fun AlarmCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     daysOfWeek.forEachIndexed { index, day ->
-                        val isSelected = days[index].isNotBlank()
+                        val isSelected = days[index].isNotEmpty()
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -126,7 +128,8 @@ fun AlarmCard(
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Row (modifier = Modifier.fillMaxWidth()){
+                Row (modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween){
                     IconButton(onClick = onDelete) {
                         Icon(imageVector = Icons.Filled.Delete, contentDescription = "")
                     }
