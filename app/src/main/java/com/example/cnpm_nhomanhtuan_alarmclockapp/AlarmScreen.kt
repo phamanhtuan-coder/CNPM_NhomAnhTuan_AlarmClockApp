@@ -27,10 +27,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun AlarmScreen(
     navController: NavHostController,
 ) {
-    var viewModel:AlarmScreenViewModel = viewModel(
+    val viewModel:AlarmScreenViewModel = viewModel(
         modelClass = AlarmScreenViewModel::class.java
     )
-    var alarmScreenState = viewModel.state
+    val alarmScreenState = viewModel.state
 
     Scaffold(
         topBar = {
@@ -118,19 +118,23 @@ fun AlarmScreen(
                     .padding(8.dp)
                     .padding(innerPadding),
             ) {
-                items (alarmScreenState.alarms){
+                items (alarmScreenState.alarms){alarm ->
                     AlarmCard(
-                        label = "Alarm ${it.label}",
-                        time = it.time,
-                        days =  it.days, //listOf("", "M", "T", "W", "", "F", "")
-                        isEnabled = it.isEnabled,
+                        label = "Alarm ${alarm.label}",
+                        time = alarm.time,
+                        days =  alarm.days,
+                        isEnabled = alarm.isEnabled,
+
                         onClick = {
-                            navController.navigate("${Screen.AlarmDetailScreen.route}?id=${it.id}")
+                            navController.navigate("${Screen.AlarmDetailScreen.route}?id=${alarm.id}")
                         },
                         onDelete = {
-                            viewModel.deleteAlarm(it)
-                        }
-
+                            viewModel.deleteAlarm(alarm)
+                        },
+                       onSwitchChange = {
+                           val updatedAlarm = alarm.copy(isEnabled = !alarm.isEnabled)
+                           viewModel.updateAlarm(updatedAlarm)
+                       }
                     )
                 }
             }

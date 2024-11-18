@@ -24,22 +24,41 @@ fun AlarmCard(
     days: List<String>,  // e.g., ["", "", "", "W", "T", "F", "S"]
     isEnabled: Boolean,
     onClick: () -> Unit,
-    onDelete:() -> Unit
+    onDelete:() -> Unit,
+    onSwitchChange: (Boolean) -> Unit
 ) {
     var alarmEnabled by remember { mutableStateOf(isEnabled) }
     val daysOfWeek = listOf("S", "M", "T", "W", "T", "F", "S")
 
-    // Identify selected days based on non-empty values in the 'days' list
-    val selectedDays = days.mapIndexedNotNull { index, day ->
-        if (day.isNotBlank()) daysOfWeek[index] else null
-    }
-    //val selectedDays = days.filter { it.isNotEmpty() }
+    val displayDays =
+        when {
+           days[1]=="M" && days[2]=="T"&&  days[3]=="W" &&  days[4]=="T" &&  days[5]=="F" &&  days[0]=="" && days[6]==""-> "Weekday"
+            days[1]=="" &&  days[2]==""&&  days[3]=="" &&  days[4]=="" &&  days[5]=="" &&  days[0]=="" && days[6]=="" -> "Never"
+            days[1]=="" &&  days[2]==""&&  days[3]=="" &&  days[4]=="" &&  days[5]=="" &&  days[0]=="S" && days[6]=="S"-> "Weekend"
+            days[1]=="M" &&  days[2]=="T"&&  days[3]=="W" &&  days[4]=="T" &&  days[5]=="F" &&  days[0]=="S" && days[6]=="S" -> "Everyday"
+            else -> {
+                // Convert array indices to day names
+                val dayNames = mutableListOf<String>()
+                days.forEachIndexed { index, value ->
+                    if (value.isNotEmpty()) {
+                        dayNames.add(
+                            when (index) {
+                                0 -> "Sun"
+                                1 -> "Mon"
+                                2 -> "Tue"
+                                3 -> "Wed"
+                                4 -> "Thu"
+                                5 -> "Fri"
+                                6 -> "Sat"
+                                else -> ""
+                            }
+                        )
+                    }
+                }
+                dayNames.joinToString(", ")
+            }
+        }
 
-    // Check if all days are selected
-//    val allDaysSelected = selectedDays.size == 7 && selectedDays.containsAll(daysOfWeek)
-//    val displayDays = if (selectedDays.size == 7 && selectedDays.containsAll(daysOfWeek)) "Everyday" else null
-    val allDaysSelected = selectedDays.size == 7 && selectedDays.containsAll(daysOfWeek)
-    val displayDays = if (allDaysSelected) "Everyday" else selectedDays.filter { it.isNotEmpty() }.joinToString(", ")
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
@@ -105,7 +124,7 @@ fun AlarmCard(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = day,
+                                text =  day ,
                                 fontSize = 12.sp,
                                 color = if (isSelected) CustomColors.onPrimary else CustomColors.onSecondary,
                             )
@@ -136,8 +155,10 @@ fun AlarmCard(
                     Switch(
                         checked = alarmEnabled,
                         onCheckedChange = {
-                            alarmEnabled = it
-//                        onToggle(it)
+                                isChecked ->
+                            alarmEnabled = isChecked
+                            onSwitchChange(isChecked)
+
                         },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = CustomColors.onPrimary,

@@ -2,8 +2,10 @@ package com.example.cnpm_nhomanhtuan_alarmclockapp
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -15,11 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.selects.select
 
 @OptIn(ExperimentalMaterial3Api::class)
 
@@ -41,14 +45,15 @@ fun AlarmDetailsScreen(
     }
 
 //    var selectedTime by remember { mutableStateOf(alarmState.time) }
-    var selectedDays by remember { mutableStateOf(setOf<Int>()) }
+    var selectedDays by remember { mutableStateOf(alarmState.days.toTypedArray().ifEmpty { Array(7) { "" } }) }
+    LaunchedEffect(alarmState.days) {
+        selectedDays = alarmState.days.toTypedArray().ifEmpty { Array(7) { "" } }
+    }
+
+
     //var selectedDays by remember { mutableStateOf(alarmState.days.toSet()) }
     var alarmName by remember { mutableStateOf(TextFieldValue(alarmState.label)) }
-//    LaunchedEffect(alarmState) {
-//        selectedTime = alarmState.time
-//        selectedDays = alarmState.days
-//        alarmName = TextFieldValue(alarmState.label)
-//    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -69,7 +74,7 @@ fun AlarmDetailsScreen(
                         id = if (id > 0) id else 0,
                         label = alarmName.text,
                         time = selectedTime,
-                        days = listOf(selectedDays.toString()),
+                        days =selectedDays.toList(),
                         isEnabled = true
                     )
                     if (id > 0) {
@@ -117,7 +122,7 @@ fun AlarmDetailsScreen(
                     AlarmSettingsCard(
                         selectedDays = selectedDays,
                         alarmName = alarmName,
-                        onDaysChange = { updateDays -> selectedDays = updateDays},
+                        onDaysChange = { updateDays -> selectedDays= updateDays },
                         onNameChange = { updatedName -> alarmName = updatedName }
                     )
                 }
@@ -129,27 +134,37 @@ fun AlarmDetailsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmSettingsCard(
-    selectedDays: Set<Int>,
+    selectedDays: Array<String> ,
     alarmName: TextFieldValue,
-    onDaysChange: (Set<Int>) -> Unit,
+    onDaysChange: (Array<String>) -> Unit,
     onNameChange: (TextFieldValue) -> Unit
 ) {
     val selectedDaysText = remember(selectedDays) {
         when {
-            selectedDays.containsAll(listOf(1, 2, 3, 4, 5)) && selectedDays.size == 5 -> "Weekdays"
-            selectedDays.containsAll(listOf(0, 6)) && selectedDays.size == 2 -> "Weekend"
-            selectedDays.size == 7 -> "Everyday"
-            else -> selectedDays.joinToString(", ") { dayIndex ->
-                when (dayIndex) {
-                    0 -> "Sun"
-                    1 -> "Mon"
-                    2 -> "Tue"
-                    3 -> "Wed"
-                    4 -> "Thu"
-                    5 -> "Fri"
-                    6 -> "Sat"
-                    else -> ""
+            selectedDays[1]=="M" && selectedDays[2]=="T"&& selectedDays[3]=="W" && selectedDays[4]=="T" && selectedDays[5]=="F" &&  selectedDays[0]=="" && selectedDays[6]==""-> "Weekday"
+            selectedDays[1]=="" && selectedDays[2]==""&& selectedDays[3]=="" && selectedDays[4]=="" && selectedDays[5]=="" &&  selectedDays[0]=="" && selectedDays[6]=="" -> "Never"
+            selectedDays[1]=="" && selectedDays[2]==""&& selectedDays[3]=="" && selectedDays[4]=="" && selectedDays[5]=="" &&  selectedDays[0]=="S" && selectedDays[6]=="S"-> "Weekend"
+            selectedDays[1]=="M" && selectedDays[2]=="T"&& selectedDays[3]=="W" && selectedDays[4]=="T" && selectedDays[5]=="F" &&  selectedDays[0]=="S" && selectedDays[6]=="S" -> "Everyday"
+            else -> {
+                // Convert array indices to day names
+                val dayNames = mutableListOf<String>()
+                selectedDays.forEachIndexed { index, value ->
+                    if (value.isNotEmpty()) {
+                        dayNames.add(
+                            when (index) {
+                                0 -> "Sun"
+                                1 -> "Mon"
+                                2 -> "Tue"
+                                3 -> "Wed"
+                                4 -> "Thu"
+                                5 -> "Fri"
+                                6 -> "Sat"
+                                else -> ""
+                            }
+                        )
+                    }
                 }
+                dayNames.joinToString(", ")
             }
         }
     }
@@ -186,28 +201,34 @@ fun AlarmSettingsCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .padding(vertical = 8.dp)
+                   ,
+                horizontalArrangement = Arrangement.SpaceEvenly,
+
             ) {
-                listOf("S", "M", "T", "W", "T", "F", "S").forEachIndexed { index, day ->
+                val daysArray = arrayOf("S", "M", "T", "W", "T", "F", "S")
+                daysArray.forEachIndexed { index, day ->
                     TextButton(
+                        modifier = Modifier.size(50.dp,50.dp),
                         onClick = {
-                            val newDays = selectedDays.toMutableSet().apply {
-                                if (contains(index)) remove(index) else add(index)
-                            }
-                            onDaysChange(newDays)
+                            // Toggle the day in the selectedDays array
+                            val updatedDays = selectedDays.copyOf() // Create a copy of the array
+                            updatedDays[index] = if (updatedDays[index].isEmpty()) day else "" // Toggle logic
+                            onDaysChange(updatedDays)
                         },
                         contentPadding = PaddingValues(0.dp)
+
                     ) {
                         Text(
                             text = day,
-                            color = if (selectedDays.contains(index)) Color.Red else Color.White,
-                            fontSize = 16.sp,
+                            color = if (selectedDays[index].isNotEmpty()) Color.Red else Color.White,
+                            fontSize = 10.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
                 }
             }
+
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -320,7 +341,7 @@ fun EndlessRollingPadlockTimePicker(
 //    val amPmState = rememberLazyListState(initialFirstVisibleItemIndex = if(amPmList.indexOf(initialTime.amPm) == 1) 0 else 1 + amPmList.size * 50)
 
     val hoursList = (1..12).toList()
-    val minutesList = (1..60).toList()
+    val minutesList = (0..59).toList()
     val amPmList = listOf("AM", "PM")
 
     val hourState = rememberLazyListState()

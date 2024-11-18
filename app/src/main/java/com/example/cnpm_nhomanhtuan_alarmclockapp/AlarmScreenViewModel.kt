@@ -42,6 +42,12 @@ class AlarmScreenViewModel (
             }
         }
     }
+
+    fun updateAlarm(alarm: Alarm){
+        viewModelScope.launch {
+            alarmRepository.updateAlarm(alarm=alarm)
+        }
+    }
 }
 
 data class AlarmScreenState(

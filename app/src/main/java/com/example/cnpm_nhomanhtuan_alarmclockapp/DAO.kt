@@ -23,4 +23,7 @@ interface AlarmDao {
 
     @Query("SELECT * FROM alarms WHERE label LIKE '%' || :query || '%'")
     fun searchAlarms(query: String): Flow<List<Alarm>>
+
+
+
 }
