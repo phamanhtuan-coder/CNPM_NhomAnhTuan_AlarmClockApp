@@ -11,7 +11,7 @@ object AlarmScheduler {
     fun scheduleAlarm(context: Context, alarmId: Int, hour: Int, minute: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java).apply {
-            putExtra("ALARM_ID", alarmId) // Đính kèm ID báo thức
+            putExtra("ALARM_ID", alarmId)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
@@ -26,6 +26,12 @@ object AlarmScheduler {
             set(Calendar.HOUR_OF_DAY, hour)
             set(Calendar.MINUTE, minute)
             set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+
+            // Kiểm tra nếu thời gian đã qua, chuyển sang ngày hôm sau
+            if (before(Calendar.getInstance())) {
+                add(Calendar.DAY_OF_MONTH, 1)
+            }
         }
 
         // Đặt báo thức với AlarmManager
@@ -35,7 +41,6 @@ object AlarmScheduler {
             pendingIntent
         )
     }
-
 
     fun cancelAlarm(context: Context, alarmId: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
