@@ -53,6 +53,10 @@ fun AlarmDetailsScreen(
     //var selectedDays by remember { mutableStateOf(alarmState.days.toSet()) }
     var alarmName by remember { mutableStateOf(TextFieldValue(alarmState.label)) }
 
+    LaunchedEffect(alarmState.label) {
+        alarmName = TextFieldValue(alarmState.label)
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(

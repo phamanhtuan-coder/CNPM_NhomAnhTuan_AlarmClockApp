@@ -120,7 +120,7 @@ fun AlarmScreen(
             ) {
                 items (alarmScreenState.alarms){alarm ->
                     AlarmCard(
-                        label = "Alarm ${alarm.label}",
+                        label = "${ if (alarm.label.isEmpty()) "Alarm ${alarm.id}" else alarm.label}",
                         time = alarm.time,
                         days =  alarm.days,
                         isEnabled = alarm.isEnabled,
