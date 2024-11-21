@@ -20,6 +20,15 @@ object AlarmScheduler {
         }
     }
 
+    private fun convertTo24HourFormat(hour: Int, isPM: String): Int {
+        return if (isPM == "PM" && hour < 12) {
+            hour + 12
+        } else if (isPM == "AM" && hour == 12) {
+            0
+        } else {
+            hour
+        }
+    }
 
     fun scheduleAlarm(context: Context, alarmId: Int, hour: Int, minute: Int, dayOfWeek: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -41,10 +50,12 @@ object AlarmScheduler {
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
 
-            if (before(Calendar.getInstance())) {
+            if (timeInMillis <= Calendar.getInstance().timeInMillis) {
                 add(Calendar.WEEK_OF_MONTH, 1)
             }
         }
+
+        println("Scheduling alarm for ID: $alarmId at ${calendar.time} for day: $dayOfWeek")
 
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
@@ -62,28 +73,36 @@ object AlarmScheduler {
                 context,
                 alarmId + dayOffset,
                 intent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
             )
-            alarmManager.cancel(pendingIntent)
+            if (pendingIntent != null) {
+                alarmManager.cancel(pendingIntent)
+            }
         }
-
     }
 
     fun scheduleAlarmIfEnabled(context: Context, alarm: Alarm) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         if (alarm.isEnabled) {
+            if (alarm.time.amPm != "AM" && alarm.time.amPm != "PM") {
+                throw IllegalArgumentException("Invalid AM/PM format: ${alarm.time.amPm}")
+            }
+
+            val hour24Format = convertTo24HourFormat(alarm.time.hour, alarm.time.amPm)
             if (alarm.days.all { it.isEmpty() }) {
                 val calendar = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, alarm.time.hour)
+                    set(Calendar.HOUR_OF_DAY, hour24Format)
                     set(Calendar.MINUTE, alarm.time.minute)
                     set(Calendar.SECOND, 0)
                     set(Calendar.MILLISECOND, 0)
 
-                    if (before(Calendar.getInstance())) {
+                    if (timeInMillis <= Calendar.getInstance().timeInMillis) {
                         add(Calendar.DAY_OF_YEAR, 1)
                     }
                 }
+
+                println("Scheduling one-time alarm for ID: ${alarm.id} at ${calendar.time}")
 
                 val intent = Intent(context, AlarmReceiver::class.java).apply {
                     putExtra("ALARM_ID", alarm.id)
@@ -95,7 +114,6 @@ object AlarmScheduler {
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
 
-                // Đặt báo thức 1 lần
                 alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
                     calendar.timeInMillis,
@@ -106,7 +124,7 @@ object AlarmScheduler {
                     if (dayChar.isNotEmpty()) {
                         try {
                             val dayOfWeek = getDayOfWeekFromChar(dayChar, index)
-                            scheduleAlarm(context, alarm.id, alarm.time.hour, alarm.time.minute, dayOfWeek)
+                            scheduleAlarm(context, alarm.id, hour24Format, alarm.time.minute, dayOfWeek)
                         } catch (e: IllegalArgumentException) {
                             println("Error scheduling alarm: ${e.message}")
                         }
@@ -117,5 +135,4 @@ object AlarmScheduler {
             cancelAlarm(context, alarm.id)
         }
     }
-
 }
