@@ -1,14 +1,32 @@
-package com.example.alarmapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp
 
+import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.os.IBinder
 import android.util.Log
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.example.cnpm_nhomanhtuan_alarmclockapp.AlarmRingActivity
+import java.util.concurrent.TimeUnit
 
 
-class AlarmWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
+class AlarmService : Service() {
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Khởi động WorkManager để lên lịch báo thức
+        val workRequest = PeriodicWorkRequest.Builder(AlarmWorker::class.java, 15, TimeUnit.MINUTES)
+            .build()
+        WorkManager.getInstance(this).enqueue(workRequest)
+        return START_STICKY
+    }
+}
+
+class AlarmWorker(appContext: Context, workerParams: WorkerParameters) : Worker(appContext, workerParams) {
     override fun doWork(): Result {
         val alarmId = inputData.getInt("ALARM_ID", -1)
         val scheduledTime = inputData.getLong("SCHEDULED_TIME", 0)
@@ -27,3 +45,4 @@ class AlarmWorker(context: Context, workerParams: WorkerParameters) : Worker(con
         return Result.success()
     }
 }
+

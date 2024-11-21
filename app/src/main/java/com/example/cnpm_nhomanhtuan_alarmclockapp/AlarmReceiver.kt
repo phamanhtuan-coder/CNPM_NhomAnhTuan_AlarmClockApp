@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 
+
 class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -24,3 +25,7 @@ class AlarmReceiver : BroadcastReceiver() {
         context.startActivity(ringIntent)
     }
 }
+
+
+
+
