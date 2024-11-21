@@ -2,6 +2,7 @@ package com.example.cnpm_nhomanhtuan_alarmclockapp
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
@@ -29,5 +30,31 @@ fun NavGraph(
                 navController.navigate(Screen.AlarmScreen.route)
             }
         }
+        composable(
+            route = "sound_picker/{currentSound}",
+            arguments = listOf(navArgument("currentSound") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val currentSound = backStackEntry.arguments?.getString("currentSound") ?: "Alarm Army"
+
+            SoundPickerScreen(
+                currentSound = currentSound,
+                navController = navController, // Truyền navController
+                onSoundSelected = { selectedSound ->
+                    // Logic xử lý khi chọn âm thanh (nếu cần)
+                },
+                onSave = { selectedSound ->
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("selectedSound", selectedSound) // Cập nhật âm thanh đã chọn
+                    navController.popBackStack()
+                },
+                onCancel = {
+                    navController.popBackStack() // Hủy và quay lại màn hình trước
+                }
+            )
+        }
+
+
+
     }
 }

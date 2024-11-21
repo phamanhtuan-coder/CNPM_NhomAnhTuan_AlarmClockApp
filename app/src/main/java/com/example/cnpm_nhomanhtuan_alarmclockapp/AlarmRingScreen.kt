@@ -1,6 +1,5 @@
 package com.example.cnpm_nhomanhtuan_alarmclockapp
 
-import android.content.Context
 import android.media.MediaPlayer
 import android.util.Log
 import androidx.compose.foundation.layout.*
@@ -11,23 +10,45 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.alarmapp.Alarm
 
 @Composable
-fun AlarmRingScreen(alarmId: Int, onStopAlarm: () -> Unit) {
+fun AlarmRingScreen(
+    alarmId: Int,
+    getAlarmById: (Int) -> kotlinx.coroutines.flow.Flow<Alarm>,
+    onStopAlarm: () -> Unit
+) {
     val context = LocalContext.current
 
-    // Trạng thái MediaPlayer
-    val mediaPlayer = remember { MediaPlayer.create(context, R.raw.morning_chime) }
+    // Quan sát `Alarm` từ Flow
+    val alarmFlow = getAlarmById(alarmId)
+    val alarm by alarmFlow.collectAsState(initial = null)
 
-    // Khởi động phát âm thanh khi giao diện được dựng
-    LaunchedEffect(Unit) {
+    // Trạng thái MediaPlayer
+    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
+    val soundResId = when (alarm?.sound) {
+        "res/raw/nature_melody" -> R.raw.nature_melody
+        "res/raw/morning_chime" -> R.raw.morning_chime
+        else -> R.raw.morning_chime // Mặc định
+    }
+    Log.d("AlarmRingScreen", "Resolved soundResId directly: $soundResId")
+
+
+    LaunchedEffect(soundResId) {
+        mediaPlayer?.release()
+
         try {
-            mediaPlayer.isLooping = true // Lặp lại âm thanh
-            mediaPlayer.start()
+            mediaPlayer = MediaPlayer.create(context, soundResId)?.apply {
+                isLooping = true
+                start() // Bắt đầu phát âm thanh
+                Log.d("AlarmRingScreen", "MediaPlayer started successfully with soundResId: $soundResId")
+            }
         } catch (e: Exception) {
-            Log.e("AlarmRingScreen", "Error starting MediaPlayer: ${e.message}")
+            Log.e("AlarmRingScreen", "Error initializing MediaPlayer: ${e.message}")
         }
     }
+
+
 
     Surface(
         modifier = Modifier
@@ -41,6 +62,12 @@ fun AlarmRingScreen(alarmId: Int, onStopAlarm: () -> Unit) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+//            Text(
+//                text = "Đang phát âm thanh: ${alarm?.sound ?: "Mặc định"}",
+//                fontSize = 18.sp,
+//                color = MaterialTheme.colorScheme.primary
+//            )
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Báo thức đang kêu!",
                 fontSize = 24.sp,
@@ -50,10 +77,13 @@ fun AlarmRingScreen(alarmId: Int, onStopAlarm: () -> Unit) {
             Button(
                 onClick = {
                     try {
-                        if (mediaPlayer.isPlaying) {
-                            mediaPlayer.stop()
+                        mediaPlayer?.let {
+                            if (it.isPlaying) {
+                                it.stop()
+                            }
+                            it.release()
                         }
-                        mediaPlayer.release()
+                        mediaPlayer = null
                         onStopAlarm()
                     } catch (e: Exception) {
                         Log.e("AlarmRingScreen", "Error stopping MediaPlayer: ${e.message}")
@@ -72,13 +102,17 @@ fun AlarmRingScreen(alarmId: Int, onStopAlarm: () -> Unit) {
     DisposableEffect(Unit) {
         onDispose {
             try {
-                if (mediaPlayer.isPlaying) {
-                    mediaPlayer.stop()
+                mediaPlayer?.let {
+                    if (it.isPlaying) {
+                        it.stop()
+                    }
+                    it.release()
                 }
-                mediaPlayer.release()
+                mediaPlayer = null
             } catch (e: Exception) {
                 Log.e("AlarmRingScreen", "Error releasing MediaPlayer: ${e.message}")
             }
         }
     }
 }
+

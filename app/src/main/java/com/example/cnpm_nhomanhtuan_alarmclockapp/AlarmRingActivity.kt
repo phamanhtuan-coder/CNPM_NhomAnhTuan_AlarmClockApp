@@ -25,7 +25,6 @@ class AlarmRingActivity : AppCompatActivity() {
             return
         }
 
-        // Kiểm tra trạng thái của báo thức
         lifecycleScope.launch {
             val isEnabled = Graph.repository.isAlarmEnabled(alarmId)
             Log.d("AlarmRingActivity", "Alarm ID: $alarmId, is_enabled: $isEnabled")
@@ -37,20 +36,19 @@ class AlarmRingActivity : AppCompatActivity() {
             }
         }
 
-        // Hiển thị giao diện với `AlarmRingScreen`
         setContent {
             AlarmRingScreen(
                 alarmId = alarmId,
-                onStopAlarm = {
-                    finish() // Kết thúc Activity sau khi dừng báo thức
-                }
+                getAlarmById = { id -> Graph.repository.getAlarmById(id) },
+                onStopAlarm = { finish() }
             )
         }
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        stopAlarm() // Đảm bảo dừng âm thanh khi Activity bị hủy
+        stopAlarm()
     }
 
     private fun stopAlarm() {

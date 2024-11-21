@@ -27,7 +27,8 @@ class AlarmDetailViewModel (
                         label = it.label,
                         time = it.time ,
                         days = it.days,
-                        isEnabled = it.isEnabled
+                        isEnabled = it.isEnabled,
+                        sound = it.sound
                     )
                 }
             }
@@ -63,5 +64,6 @@ data class AlarmState(
     var label:String = "",
     var time: Time = Time(0, 0, amPm = "AM"),
     var days:List<String> = emptyList(),
-    var isEnabled: Boolean = false
+    var isEnabled: Boolean = false,
+    var sound: String = "Default"
 )

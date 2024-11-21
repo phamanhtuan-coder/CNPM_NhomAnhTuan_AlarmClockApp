@@ -1,6 +1,7 @@
 package com.example.cnpm_nhomanhtuan_alarmclockapp
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.alarmapp.Alarm
@@ -26,19 +28,25 @@ import com.example.alarmapp.Time
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
-
 @Composable
 fun AlarmDetailsScreen(
    navController: NavHostController,
     id: Int = -1,
 ) {
+    val context = LocalContext.current
     var viewModel = viewModel<AlarmDetailViewModel>(
         factory = AlarmDetailViewModelFactor(id)
     )
     var alarmState = viewModel.state
-
+    var selectedSound by remember { mutableStateOf("") }
     //val alarmData = sampleAlarms.find { it.id == id }
     var selectedTime by remember { mutableStateOf(alarmState.time) }
+    var soundResourcePath by remember { mutableStateOf("") }
+
+    LaunchedEffect(selectedSound) {
+        val resourceId = getSoundResourceId(context, selectedSound)
+        soundResourcePath = if (resourceId != null) "res/raw/${context.resources.getResourceEntryName(resourceId)}" else "Unknown"
+    }
 
     LaunchedEffect(alarmState.time) {
         selectedTime = alarmState.time
@@ -50,11 +58,37 @@ fun AlarmDetailsScreen(
         selectedDays = alarmState.days.toTypedArray().ifEmpty { Array(7) { "" } }
     }
 
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(navController.currentBackStackEntry) {
+        navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.getLiveData<String>("selectedSound")
+            ?.observe(lifecycleOwner) { newSound ->
+                selectedSound = newSound
+            }
+    }
 
     //var selectedDays by remember { mutableStateOf(alarmState.days.toSet()) }
     var alarmName by remember { mutableStateOf(TextFieldValue(alarmState.label)) }
 
     LaunchedEffect(alarmState.label) {
+        alarmName = TextFieldValue(alarmState.label)
+    }
+    LaunchedEffect(alarmState) {
+        if (alarmState.sound.isNotEmpty()) {
+            selectedSound = when (alarmState.sound) {
+                "res/raw/morning_chime" -> "Morning Chime"
+                "res/raw/nature_melody" -> "Nature Melody"
+                else -> "Morning Chime"
+            }
+            soundResourcePath = alarmState.sound
+        } else {
+            soundResourcePath = "res/raw/morning_chime"
+        }
+
+        selectedTime = alarmState.time
+        selectedDays = alarmState.days.toTypedArray().ifEmpty { Array(7) { "" } }
         alarmName = TextFieldValue(alarmState.label)
     }
 
@@ -80,6 +114,7 @@ fun AlarmDetailsScreen(
                         label = alarmName.text,
                         time = selectedTime,
                         days = selectedDays.toList(),
+                        sound = soundResourcePath,
                         isEnabled = true
                     )
                     if (id > 0) {
@@ -132,11 +167,27 @@ fun AlarmDetailsScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
+                    val lifecycleOwner = LocalLifecycleOwner.current
+
+                    LaunchedEffect(navController.currentBackStackEntry) {
+                        navController.currentBackStackEntry
+                            ?.savedStateHandle
+                            ?.getLiveData<String>("selectedSound")
+                            ?.observe(lifecycleOwner) { newSound ->
+                                selectedSound = newSound
+                            }
+                    }
+
+
                     AlarmSettingsCard(
                         selectedDays = selectedDays,
                         alarmName = alarmName,
-                        onDaysChange = { updateDays -> selectedDays= updateDays },
-                        onNameChange = { updatedName -> alarmName = updatedName }
+                        selectedSound = selectedSound,
+                        onDaysChange = { updatedDays -> selectedDays = updatedDays },
+                        onNameChange = { updatedName -> alarmName = updatedName },
+                        onSoundChange = {
+                            navController.navigate("sound_picker/$selectedSound")
+                        }
                     )
                 }
             }
@@ -149,8 +200,10 @@ fun AlarmDetailsScreen(
 fun AlarmSettingsCard(
     selectedDays: Array<String> ,
     alarmName: TextFieldValue,
+    selectedSound: String,
     onDaysChange: (Array<String>) -> Unit,
-    onNameChange: (TextFieldValue) -> Unit
+    onNameChange: (TextFieldValue) -> Unit,
+    onSoundChange: () -> Unit
 ) {
     val selectedDaysText = remember(selectedDays) {
         when {
@@ -224,9 +277,8 @@ fun AlarmSettingsCard(
                     TextButton(
                         modifier = Modifier.size(50.dp,50.dp),
                         onClick = {
-                            // Toggle the day in the selectedDays array
-                            val updatedDays = selectedDays.copyOf() // Create a copy of the array
-                            updatedDays[index] = if (updatedDays[index].isEmpty()) day else "" // Toggle logic
+                            val updatedDays = selectedDays.copyOf()
+                            updatedDays[index] = if (updatedDays[index].isEmpty()) day else ""
                             onDaysChange(updatedDays)
                         },
                         contentPadding = PaddingValues(0.dp)
@@ -264,8 +316,11 @@ fun AlarmSettingsCard(
                 )
             )
             Spacer(modifier = Modifier.height (8.dp))
-            HorizontalDivider(thickness = 1.dp)
-            AlarmSettingItem(title = "Alarm sound", value = "Alarm Army")
+            AlarmSettingItem(
+                title = "Alarm sound",
+                value = selectedSound,
+                onClick = onSoundChange
+            )
             AlarmSettingItem(title = "Vibration", value = "Basic call")
             AlarmSettingItem(title = "Snooze", value = "5 minutes, Forever")
 
@@ -274,34 +329,39 @@ fun AlarmSettingsCard(
 }
 
 @Composable
-fun AlarmSettingItem(title: String, value: String) {
+fun AlarmSettingItem(title: String, value: String, onClick: () -> Unit = {}) {
     var isChecked by remember { mutableStateOf(true) }
 
-    Row(
+    Card (
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column {
-            Text(text = title, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium)
-            if (value.isNotEmpty()) {
-                Text(text = value, color = Color.Gray, fontSize = 14.sp)
+        colors = CardDefaults.cardColors(containerColor =CustomColors.secondary)
+    ){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(text = title, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                if (value.isNotEmpty()) {
+                    Text(text = value, color = Color.Gray, fontSize = 14.sp)
+                }
             }
+
+//            Switch(
+//                checked = isChecked,
+//                onCheckedChange = { isChecked = it },
+//                colors = SwitchDefaults.colors(
+//                    checkedThumbColor = CustomColors.onPrimary,
+//                    uncheckedThumbColor = CustomColors.onSecondary,
+//                )
+//            )
         }
-
-        Switch(
-            checked = isChecked,
-            onCheckedChange = { isChecked = it },
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = CustomColors.onPrimary,
-                uncheckedThumbColor = CustomColors.onSecondary,
-                //checkedTrackColor = Color(0xFFBB86FC),
-
-                //uncheckedTrackColor = Color.DarkGray
-            )
-        )
     }
 }
 

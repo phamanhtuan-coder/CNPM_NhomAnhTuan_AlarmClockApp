@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.example.alarmapp.Alarm
 import java.util.Calendar
 
@@ -43,6 +44,8 @@ object AlarmScheduler {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+
+        Log.d("AlarmScheduler", "PendingIntent created for alarm ID: $alarmId")
         val calendar = Calendar.getInstance().apply {
             set(Calendar.DAY_OF_WEEK, dayOfWeek)
             set(Calendar.HOUR_OF_DAY, hour)

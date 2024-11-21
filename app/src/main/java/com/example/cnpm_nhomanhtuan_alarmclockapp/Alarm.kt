@@ -13,7 +13,8 @@ data class Alarm(
     @ColumnInfo(name = "label") val label: String = "",
     @ColumnInfo(name = "time") val time: Time = Time(0, 0, "AM"),
     @ColumnInfo(name = "days") val days: List<String> = emptyList(),
-    @ColumnInfo(name = "is_enabled") val isEnabled: Boolean = false
+    @ColumnInfo(name = "is_enabled") val isEnabled: Boolean = false,
+    @ColumnInfo(name = "sound") val sound: String = "R.raw.morning_chime"
 )
 
 data class Time(var hour: Int, var minute: Int, var amPm: String)
