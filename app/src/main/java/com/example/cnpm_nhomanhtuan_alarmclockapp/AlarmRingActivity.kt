@@ -25,6 +25,7 @@ class AlarmRingActivity : AppCompatActivity() {
             return
         }
 
+        // Kiểm tra trạng thái của báo thức
         lifecycleScope.launch {
             val isEnabled = Graph.repository.isAlarmEnabled(alarmId)
             Log.d("AlarmRingActivity", "Alarm ID: $alarmId, is_enabled: $isEnabled")
@@ -32,41 +33,16 @@ class AlarmRingActivity : AppCompatActivity() {
                 Log.d("AlarmRingActivity", "Alarm is not enabled, stopping activity.")
                 finish()
             } else {
-                Log.d("AlarmRingActivity", "Alarm is enabled, starting alarm.")
-                // Tiếp tục logic
-                val alarmUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-                ringtone = RingtoneManager.getRingtone(applicationContext, alarmUri)
-                ringtone?.play()
+                Log.d("AlarmRingActivity", "Alarm is enabled, starting custom sound.")
             }
         }
 
-
-
-        val alarmUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-        ringtone = RingtoneManager.getRingtone(applicationContext, alarmUri)
-        ringtone?.play()
-
-
-        if (alarmId == -1) {
-            Log.e("AlarmRingActivity", "Không tìm thấy ID báo thức!")
-            finish()
-            return
-        }
-
-        Log.d("AlarmRingActivity", "Báo thức được kích hoạt với ID: $alarmId")
-
-        // Phát âm báo thức
-//        val alarmUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-//        ringtone = RingtoneManager.getRingtone(applicationContext, alarmUri)
-//        ringtone?.play()
-
-        // Hiển thị giao diện Compose
+        // Hiển thị giao diện với `AlarmRingScreen`
         setContent {
             AlarmRingScreen(
-                alarmId = alarmId, // Sử dụng ID báo thức từ Intent
+                alarmId = alarmId,
                 onStopAlarm = {
-                    stopAlarm() // Dừng báo thức
-                    finish() // Kết thúc Activity
+                    finish() // Kết thúc Activity sau khi dừng báo thức
                 }
             )
         }

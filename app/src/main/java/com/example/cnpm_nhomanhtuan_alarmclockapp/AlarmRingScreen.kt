@@ -2,6 +2,7 @@ package com.example.cnpm_nhomanhtuan_alarmclockapp
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,8 +21,12 @@ fun AlarmRingScreen(alarmId: Int, onStopAlarm: () -> Unit) {
 
     // Khởi động phát âm thanh khi giao diện được dựng
     LaunchedEffect(Unit) {
-        mediaPlayer.isLooping = true // Lặp lại âm thanh
-        mediaPlayer.start()
+        try {
+            mediaPlayer.isLooping = true // Lặp lại âm thanh
+            mediaPlayer.start()
+        } catch (e: Exception) {
+            Log.e("AlarmRingScreen", "Error starting MediaPlayer: ${e.message}")
+        }
     }
 
     Surface(
@@ -41,18 +46,18 @@ fun AlarmRingScreen(alarmId: Int, onStopAlarm: () -> Unit) {
                 fontSize = 24.sp,
                 color = MaterialTheme.colorScheme.primary
             )
-//            Spacer(modifier = Modifier.height(16.dp))
-//            Text(
-//                text = "ID báo thức: $alarmId",
-//                fontSize = 18.sp,
-//                color = MaterialTheme.colorScheme.secondary
-//            )
             Spacer(modifier = Modifier.height(32.dp))
             Button(
                 onClick = {
-                    mediaPlayer.stop() // Dừng âm thanh
-                    mediaPlayer.release() // Giải phóng MediaPlayer
-                    onStopAlarm() // Gọi hàm callback
+                    try {
+                        if (mediaPlayer.isPlaying) {
+                            mediaPlayer.stop()
+                        }
+                        mediaPlayer.release()
+                        onStopAlarm()
+                    } catch (e: Exception) {
+                        Log.e("AlarmRingScreen", "Error stopping MediaPlayer: ${e.message}")
+                    }
                 },
                 modifier = Modifier
                     .width(200.dp)
@@ -63,13 +68,17 @@ fun AlarmRingScreen(alarmId: Int, onStopAlarm: () -> Unit) {
         }
     }
 
-    // Dừng âm thanh khi giao diện bị hủy
+    // Dừng MediaPlayer khi giao diện bị hủy
     DisposableEffect(Unit) {
         onDispose {
-            if (mediaPlayer.isPlaying) {
-                mediaPlayer.stop()
+            try {
+                if (mediaPlayer.isPlaying) {
+                    mediaPlayer.stop()
+                }
+                mediaPlayer.release()
+            } catch (e: Exception) {
+                Log.e("AlarmRingScreen", "Error releasing MediaPlayer: ${e.message}")
             }
-            mediaPlayer.release()
         }
     }
 }
