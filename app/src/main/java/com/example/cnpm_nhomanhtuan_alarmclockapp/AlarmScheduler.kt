@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import com.example.alarmapp.Alarm
 import java.util.Calendar
 
 object AlarmScheduler {
@@ -53,4 +54,13 @@ object AlarmScheduler {
         )
         alarmManager.cancel(pendingIntent)
     }
+
+    fun scheduleAlarmIfEnabled(context: Context, alarm: Alarm) {
+        if (alarm.isEnabled) {
+            scheduleAlarm(context, alarm.id, alarm.time.hour, alarm.time.minute)
+        } else {
+            cancelAlarm(context, alarm.id)
+        }
+    }
+
 }

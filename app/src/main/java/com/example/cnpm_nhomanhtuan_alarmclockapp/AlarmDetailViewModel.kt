@@ -1,5 +1,6 @@
 package com.example.cnpm_nhomanhtuan_alarmclockapp
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -38,11 +39,16 @@ class AlarmDetailViewModel (
             alarmRepository.insertAlarm(alarm = alarm)
         }
     }
-    fun updateAlarm(alarm: Alarm){
+    fun updateAlarm(alarm: Alarm, context: Context) {
         viewModelScope.launch {
-            alarmRepository.updateAlarm(alarm=alarm)
+            alarmRepository.updateAlarm(alarm)
+            AlarmScheduler.scheduleAlarmIfEnabled(
+                context = context,
+                alarm = alarm
+            )
         }
     }
+
 }
 
 @Suppress("UNCHECKED_CAST")

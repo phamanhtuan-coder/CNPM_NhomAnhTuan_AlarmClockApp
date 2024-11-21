@@ -19,6 +19,9 @@ interface AlarmDao {
     @Query("SELECT * FROM alarms WHERE id = :id")
     fun getAlarmById(id: Int): Flow<Alarm>
 
+    @Query("SELECT is_enabled FROM alarms WHERE id = :id")
+    fun getIsEnabled(id: Int): Flow<Boolean>
+
     @Query("SELECT * FROM alarms")
     fun getAllAlarms(): Flow<List<Alarm>>
 

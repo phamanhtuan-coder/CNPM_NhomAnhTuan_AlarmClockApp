@@ -1,6 +1,7 @@
 package com.example.cnpm_nhomanhtuan_alarmclockapp
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -12,6 +13,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.stateIn
 
@@ -80,6 +83,13 @@ class AlarmRepository(private val alarmDao: AlarmDao) {
 
     // Retrieves a single alarm by ID
     fun getAlarmById(id: Int) = alarmDao.getAlarmById(id)
+
+    suspend fun isAlarmEnabled(id: Int): Boolean {
+        val isEnabled = alarmDao.getIsEnabled(id).firstOrNull()
+        Log.d("AlarmRepository", "is_enabled for alarm ID $id: $isEnabled")
+        return isEnabled ?: false // Nếu null, mặc định trả về false
+    }
+
 
     // Updates an existing alarm in the database
     suspend fun updateAlarm(alarm: Alarm) {

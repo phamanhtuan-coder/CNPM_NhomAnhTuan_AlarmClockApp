@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -68,6 +69,7 @@ fun AlarmDetailsScreen(
             )
         },
         bottomBar = {
+            val context = LocalContext.current
             BottomActionBar(
                 onCancelClick = {
                     navController.popBackStack()
@@ -81,17 +83,15 @@ fun AlarmDetailsScreen(
                         isEnabled = true
                     )
                     if (id > 0) {
-                        viewModel.updateAlarm(alarm)
+                        viewModel.updateAlarm(alarm, context)
                     } else {
                         viewModel.insertAlarm(alarm)
                     }
 
                     // Lên lịch báo thức
-                    AlarmScheduler.scheduleAlarm(
+                    AlarmScheduler.scheduleAlarmIfEnabled(
                         context = navController.context,
-                        alarmId = alarm.id,
-                        hour = selectedTime.hour,
-                        minute = selectedTime.minute
+                        alarm = alarm
                     )
 
                     navController.popBackStack()
