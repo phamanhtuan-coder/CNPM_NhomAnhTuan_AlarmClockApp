@@ -9,7 +9,7 @@ import com.example.cnpm_nhomanhtuan_alarmclockapp.Converters
 @TypeConverters(Converters::class)
 @Entity(tableName = "alarms")
 data class Alarm(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Int = 1,
     @ColumnInfo(name = "label") val label: String = "",
     @ColumnInfo(name = "time") val time: Time = Time(0, 0, "AM"),
     @ColumnInfo(name = "days") val days: List<String> = emptyList(),

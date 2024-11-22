@@ -104,7 +104,7 @@ fun AlarmCard(
             }
 
             // 3rd row: Days or Everyday
-            if (displayDays != null) {
+            if (displayDays.isNotEmpty()) {
                 Text(
                     text = displayDays,
                     fontSize = 10.sp,

@@ -60,7 +60,7 @@ class AlarmDetailViewModelFactor(private val id:Int) : ViewModelProvider.Factory
 }
 
 data class AlarmState(
-    var id:Int=0,
+    var id:Int=1,
     var label:String = "",
     var time: Time = Time(0, 0, amPm = "AM"),
     var days:List<String> = emptyList(),

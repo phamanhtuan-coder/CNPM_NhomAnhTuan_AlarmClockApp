@@ -110,7 +110,7 @@ fun AlarmDetailsScreen(
                                 },
                 onSaveClick = {
                     val alarm = Alarm(
-                        id = if (id > 0) id else 0,
+                        id = if (id > 0) id else 1,
                         label = alarmName.text,
                         time = selectedTime,
                         days = selectedDays.toList(),
@@ -127,6 +127,7 @@ fun AlarmDetailsScreen(
                     AlarmScheduler.scheduleAlarmIfEnabled(
                         context = navController.context,
                         alarm = alarm
+
                     )
 
                     navController.popBackStack()

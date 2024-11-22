@@ -2,6 +2,7 @@ package com.example.cnpm_nhomanhtuan_alarmclockapp
 
 import android.app.AlarmManager
 import android.app.PendingIntent
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -45,7 +46,7 @@ object AlarmScheduler {
         )
 
 
-        Log.d("AlarmScheduler", "PendingIntent created for alarm ID: $alarmId")
+        Log.e(TAG, "scheduleAlarm: "+alarmId)
         val calendar = Calendar.getInstance().apply {
             set(Calendar.DAY_OF_WEEK, dayOfWeek)
             set(Calendar.HOUR_OF_DAY, hour)
@@ -58,7 +59,7 @@ object AlarmScheduler {
             }
         }
 
-        println("Scheduling alarm for ID: $alarmId at ${calendar.time} for day: $dayOfWeek")
+        Log.e(TAG, "scheduleAlarm: "+alarmId +" at ${calendar.time}")
 
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
@@ -106,6 +107,7 @@ object AlarmScheduler {
                 }
 
                 println("Scheduling one-time alarm for ID: ${alarm.id} at ${calendar.time}")
+                println("Alarm: $alarm")
 
                 val intent = Intent(context, AlarmReceiver::class.java).apply {
                     putExtra("ALARM_ID", alarm.id)
