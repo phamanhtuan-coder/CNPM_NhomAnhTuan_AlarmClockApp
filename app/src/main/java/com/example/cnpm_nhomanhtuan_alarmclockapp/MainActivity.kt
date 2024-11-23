@@ -5,10 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.example.cnpm_nhomanhtuan_alarmclockapp.navigation.NavGraph
 import com.example.cnpm_nhomanhtuan_alarmclockapp.ui.theme.CNPM_NhomAnhTuan_AlarmClockAppTheme
 
 class MainActivity : ComponentActivity() {

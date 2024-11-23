@@ -1,5 +1,6 @@
-package com.example.cnpm_nhomanhtuan_alarmclockapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp.ui.view
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,6 +24,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.cnpm_nhomanhtuan_alarmclockapp.data.model.Alarm
+import com.example.cnpm_nhomanhtuan_alarmclockapp.utils.AlarmScheduler
+import com.example.cnpm_nhomanhtuan_alarmclockapp.utils.CustomColors
+import com.example.cnpm_nhomanhtuan_alarmclockapp.data.model.Time
+import com.example.cnpm_nhomanhtuan_alarmclockapp.ui.viewmodel.AlarmDetailViewModel
+import com.example.cnpm_nhomanhtuan_alarmclockapp.ui.viewmodel.AlarmDetailViewModelFactor
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,17 +39,17 @@ fun AlarmDetailsScreen(
     id: Int = -1,
 ) {
     val context = LocalContext.current
-    var viewModel = viewModel<AlarmDetailViewModel>(
+    val viewModel = viewModel<AlarmDetailViewModel>(
         factory = AlarmDetailViewModelFactor(id)
     )
-    var alarmState = viewModel.state
+    val alarmState = viewModel.state
     var selectedSound by remember { mutableStateOf("") }
     //val alarmData = sampleAlarms.find { it.id == id }
     var selectedTime by remember { mutableStateOf(alarmState.time) }
     var soundResourcePath by remember { mutableStateOf("") }
 
     LaunchedEffect(selectedSound) {
-        val resourceId = getSoundResourceId(context, selectedSound)
+        val resourceId = getSoundResourceId(selectedSound)
         soundResourcePath = if (resourceId != null) "res/raw/${context.resources.getResourceEntryName(resourceId)}" else "Unknown"
     }
 
@@ -101,7 +108,7 @@ fun AlarmDetailsScreen(
             )
         },
         bottomBar = {
-            val context = LocalContext.current
+            @Suppress("NAME_SHADOWING") val context = LocalContext.current
             BottomActionBar(
                 onCancelClick = {
                     navController.popBackStack()
@@ -166,7 +173,7 @@ fun AlarmDetailsScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    val lifecycleOwner = LocalLifecycleOwner.current
+                    @Suppress("NAME_SHADOWING") val lifecycleOwner = LocalLifecycleOwner.current
 
                     LaunchedEffect(navController.currentBackStackEntry) {
                         navController.currentBackStackEntry
@@ -240,7 +247,7 @@ fun AlarmSettingsCard(
             .padding(8.dp)
             .fillMaxHeight(1f),
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-        colors = CardDefaults.cardColors(containerColor =CustomColors.secondary)
+        colors = CardDefaults.cardColors(containerColor = CustomColors.secondary)
     ) {
         Column(
             modifier = Modifier
@@ -329,14 +336,13 @@ fun AlarmSettingsCard(
 
 @Composable
 fun AlarmSettingItem(title: String, value: String, onClick: () -> Unit = {}) {
-    var isChecked by remember { mutableStateOf(true) }
 
     Card (
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
             .padding(vertical = 8.dp),
-        colors = CardDefaults.cardColors(containerColor =CustomColors.secondary)
+        colors = CardDefaults.cardColors(containerColor = CustomColors.secondary)
     ){
         Row(
             modifier = Modifier
@@ -397,6 +403,7 @@ fun BottomActionBar(
     }
 }
 
+@SuppressLint("FrequentlyChangedStateReadInComposition")
 @Composable
 fun EndlessRollingPadlockTimePicker(
     modifier: Modifier = Modifier,

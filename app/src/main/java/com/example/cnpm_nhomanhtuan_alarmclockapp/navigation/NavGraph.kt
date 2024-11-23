@@ -1,4 +1,4 @@
-package com.example.cnpm_nhomanhtuan_alarmclockapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -21,7 +21,8 @@ fun NavGraph(
         composable(Screen.AlarmScreen.route) {
             AlarmScreen(navController = navController)
         }
-        composable(Screen.AlarmDetailScreen.route+ "?id={id}",
+        composable(
+            Screen.AlarmDetailScreen.route+ "?id={id}",
             arguments = listOf(navArgument("id") { nullable=true })
             ) {
             val id = it.arguments?.getString("id")?.toIntOrNull()
@@ -42,7 +43,7 @@ fun NavGraph(
             SoundPickerScreen(
                 currentSound = currentSound,
                 navController = navController, // Truyền navController
-                onSoundSelected = { selectedSound ->
+                onSoundSelected = {
                     // Logic xử lý khi chọn âm thanh (nếu cần)
                 },
                 onSave = { selectedSound ->

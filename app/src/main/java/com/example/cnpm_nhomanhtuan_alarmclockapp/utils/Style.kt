@@ -1,4 +1,4 @@
-package com.example.cnpm_nhomanhtuan_alarmclockapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp.utils
 
 import androidx.compose.ui.graphics.Color
 

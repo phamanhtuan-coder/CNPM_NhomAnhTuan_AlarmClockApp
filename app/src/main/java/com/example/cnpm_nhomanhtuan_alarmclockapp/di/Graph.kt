@@ -1,11 +1,12 @@
-package com.example.cnpm_nhomanhtuan_alarmclockapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp.di
 
 import android.content.Context
 import android.util.Log
+import com.example.cnpm_nhomanhtuan_alarmclockapp.data.source.local.AlarmDatabase
 import com.example.cnpm_nhomanhtuan_alarmclockapp.data.repository.AlarmRepository
 
 object Graph {
-    lateinit var db: AlarmDatabase
+    private lateinit var db: AlarmDatabase
 
     // Đảm bảo repository được khởi tạo đúng cách
     val repository by lazy {

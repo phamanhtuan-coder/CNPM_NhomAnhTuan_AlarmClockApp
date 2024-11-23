@@ -1,4 +1,4 @@
-package com.example.cnpm_nhomanhtuan_alarmclockapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp.utils
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -12,7 +12,7 @@ import java.util.Calendar
 
 object AlarmScheduler {
 
-    fun getDayOfWeekFromChar(dayChar: String, position: Int): Int {
+    private fun getDayOfWeekFromChar(dayChar: String, position: Int): Int {
         return when (dayChar) {
             "S" -> if (position == 0) Calendar.SUNDAY else Calendar.SATURDAY
             "M" -> Calendar.MONDAY
@@ -33,7 +33,7 @@ object AlarmScheduler {
         }
     }
 
-    fun scheduleAlarm(context: Context, alarmId: Int, hour: Int, minute: Int, dayOfWeek: Int) {
+    private fun scheduleAlarm(context: Context, alarmId: Int, hour: Int, minute: Int, dayOfWeek: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("ALARM_ID", alarmId)
@@ -47,7 +47,7 @@ object AlarmScheduler {
         )
 
 
-        Log.e(TAG, "scheduleAlarm: "+alarmId)
+        Log.d(TAG, "scheduleAlarm: $alarmId")
         val calendar = Calendar.getInstance().apply {
             set(Calendar.DAY_OF_WEEK, dayOfWeek)
             set(Calendar.HOUR_OF_DAY, hour)
@@ -60,7 +60,7 @@ object AlarmScheduler {
             }
         }
 
-        Log.e(TAG, "scheduleAlarm: "+alarmId +" at ${calendar.time}")
+        Log.d(TAG, "scheduleAlarm: "+alarmId +" at ${calendar.time}")
 
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
@@ -69,7 +69,7 @@ object AlarmScheduler {
         )
     }
 
-    fun cancelAlarm(context: Context, alarmId: Int) {
+    private fun cancelAlarm(context: Context, alarmId: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java)
 

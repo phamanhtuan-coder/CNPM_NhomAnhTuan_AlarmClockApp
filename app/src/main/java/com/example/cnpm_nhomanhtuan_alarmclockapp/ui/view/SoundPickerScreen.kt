@@ -1,7 +1,6 @@
-package com.example.cnpm_nhomanhtuan_alarmclockapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp.ui.view
 
 import android.media.MediaPlayer
-import android.content.Context
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.cnpm_nhomanhtuan_alarmclockapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,7 +96,7 @@ fun SoundPickerScreen(
                             mediaPlayer?.release()
                             mediaPlayer = null
 
-                            val soundResId = getSoundResourceId(context, sound)
+                            val soundResId = getSoundResourceId(sound)
                             if (soundResId != null) {
                                 mediaPlayer = MediaPlayer.create(context, soundResId)
                                 mediaPlayer?.start()
@@ -142,7 +142,7 @@ fun SoundPickerScreen(
     }
 }
 
-fun getSoundResourceId(context: Context, soundName: String): Int? {
+fun getSoundResourceId(soundName: String): Int? {
     return when (soundName) {
         "Morning Chime" -> R.raw.morning_chime
         "Nature Melody" -> R.raw.nature_melody
@@ -153,7 +153,7 @@ fun getSoundResourceId(context: Context, soundName: String): Int? {
 
 @Composable
 fun WaveformAnimation(modifier: Modifier = Modifier) {
-    val infiniteTransition = rememberInfiniteTransition()
+    val infiniteTransition = rememberInfiniteTransition(label = "")
 
     val scale1 by infiniteTransition.animateFloat(
         initialValue = 0.5f,
@@ -161,7 +161,7 @@ fun WaveformAnimation(modifier: Modifier = Modifier) {
         animationSpec = infiniteRepeatable(
             animation = tween(400, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
-        )
+        ), label = ""
     )
 
     val scale2 by infiniteTransition.animateFloat(
@@ -170,7 +170,7 @@ fun WaveformAnimation(modifier: Modifier = Modifier) {
         animationSpec = infiniteRepeatable(
             animation = tween(400, easing = LinearEasing, delayMillis = 200),
             repeatMode = RepeatMode.Reverse
-        )
+        ), label = ""
     )
 
     val scale3 by infiniteTransition.animateFloat(
@@ -179,7 +179,7 @@ fun WaveformAnimation(modifier: Modifier = Modifier) {
         animationSpec = infiniteRepeatable(
             animation = tween(400, easing = LinearEasing, delayMillis = 400),
             repeatMode = RepeatMode.Reverse
-        )
+        ), label = ""
     )
 
     Row(
@@ -207,4 +207,3 @@ fun WaveformAnimation(modifier: Modifier = Modifier) {
         )
     }
 }
-

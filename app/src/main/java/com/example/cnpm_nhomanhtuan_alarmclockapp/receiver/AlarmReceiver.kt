@@ -1,4 +1,4 @@
-package com.example.cnpm_nhomanhtuan_alarmclockapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context

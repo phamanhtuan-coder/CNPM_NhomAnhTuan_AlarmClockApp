@@ -1,4 +1,4 @@
-package com.example.cnpm_nhomanhtuan_alarmclockapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp.ui.view
 
 import android.media.MediaPlayer
 import android.util.Log
@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cnpm_nhomanhtuan_alarmclockapp.data.model.Alarm
+import com.example.cnpm_nhomanhtuan_alarmclockapp.R
 
 @Composable
 fun AlarmRingScreen(

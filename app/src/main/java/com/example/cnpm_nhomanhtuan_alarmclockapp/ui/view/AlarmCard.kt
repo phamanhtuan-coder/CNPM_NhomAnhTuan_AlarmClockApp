@@ -1,4 +1,4 @@
-package com.example.cnpm_nhomanhtuan_alarmclockapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp.ui.view
 
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.background
@@ -15,6 +15,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cnpm_nhomanhtuan_alarmclockapp.utils.CustomColors
+import com.example.cnpm_nhomanhtuan_alarmclockapp.data.model.Time
 
 @Composable
 fun AlarmCard(

@@ -1,4 +1,4 @@
-package com.example.cnpm_nhomanhtuan_alarmclockapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp.data.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

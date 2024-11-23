@@ -1,4 +1,4 @@
-package com.example.cnpm_nhomanhtuan_alarmclockapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp.ui.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -21,13 +21,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.cnpm_nhomanhtuan_alarmclockapp.ui.viewmodel.AlarmScreenViewModel
+import com.example.cnpm_nhomanhtuan_alarmclockapp.utils.CustomColors
+import com.example.cnpm_nhomanhtuan_alarmclockapp.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmScreen(
     navController: NavHostController,
 ) {
-    val viewModel:AlarmScreenViewModel = viewModel(
+    val viewModel: AlarmScreenViewModel = viewModel(
         modelClass = AlarmScreenViewModel::class.java
     )
     val alarmScreenState = viewModel.state
@@ -120,7 +123,7 @@ fun AlarmScreen(
             ) {
                 items (alarmScreenState.alarms){alarm ->
                     AlarmCard(
-                        label = "${ if (alarm.label.isEmpty()) "Alarm ${alarm.id}" else alarm.label}",
+                        label = alarm.label.ifEmpty { "Alarm ${alarm.id}" },
                         time = alarm.time,
                         days =  alarm.days,
                         isEnabled = alarm.isEnabled,

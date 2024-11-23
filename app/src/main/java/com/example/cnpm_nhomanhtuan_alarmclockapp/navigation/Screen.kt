@@ -1,4 +1,4 @@
-package com.example.cnpm_nhomanhtuan_alarmclockapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp.navigation
 
 sealed class Screen(val route: String) {
     object AlarmScreen : Screen("AlarmScreen")

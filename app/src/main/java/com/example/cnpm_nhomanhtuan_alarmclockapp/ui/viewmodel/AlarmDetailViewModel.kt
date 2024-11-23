@@ -1,4 +1,4 @@
-package com.example.cnpm_nhomanhtuan_alarmclockapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp.ui.viewmodel
 
 import android.content.Context
 import androidx.compose.runtime.getValue
@@ -7,12 +7,17 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.cnpm_nhomanhtuan_alarmclockapp.data.model.Alarm
+import com.example.cnpm_nhomanhtuan_alarmclockapp.utils.AlarmScheduler
+import com.example.cnpm_nhomanhtuan_alarmclockapp.di.Graph
+import com.example.cnpm_nhomanhtuan_alarmclockapp.data.model.Time
+import com.example.cnpm_nhomanhtuan_alarmclockapp.data.repository.AlarmRepository
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class AlarmDetailViewModel (
     private val alarmId:Int,
-    private val alarmRepository:AlarmRepository = Graph.repository
+    private val alarmRepository: AlarmRepository = Graph.repository
 ):ViewModel(){
     var state by mutableStateOf(AlarmState())
        

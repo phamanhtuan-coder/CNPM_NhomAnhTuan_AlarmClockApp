@@ -1,6 +1,7 @@
-package com.example.cnpm_nhomanhtuan_alarmclockapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp.utils
 
 import androidx.room.TypeConverter
+import com.example.cnpm_nhomanhtuan_alarmclockapp.data.model.Time
 
 
 class Converters {
