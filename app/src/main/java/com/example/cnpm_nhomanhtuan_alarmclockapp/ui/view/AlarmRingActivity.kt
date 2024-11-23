@@ -1,13 +1,12 @@
 package com.example.cnpm_nhomanhtuan_alarmclockapp
 
 import android.media.Ringtone
-import android.media.RingtoneManager
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.cnpm_nhomanhtuan_alarmclockapp.ui.view.AlarmRingScreen
 import kotlinx.coroutines.launch
 
 class AlarmRingActivity : AppCompatActivity() {

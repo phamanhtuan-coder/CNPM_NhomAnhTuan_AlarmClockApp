@@ -6,6 +6,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.cnpm_nhomanhtuan_alarmclockapp.ui.view.AlarmDetailsScreen
+import com.example.cnpm_nhomanhtuan_alarmclockapp.ui.view.AlarmScreen
+import com.example.cnpm_nhomanhtuan_alarmclockapp.ui.view.SoundPickerScreen
 
 @Composable
 fun NavGraph(

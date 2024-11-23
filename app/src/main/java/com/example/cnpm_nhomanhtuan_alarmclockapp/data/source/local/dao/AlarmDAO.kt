@@ -1,8 +1,8 @@
-package com.example.cnpm_nhomanhtuan_alarmclockapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp.data.source.local
 
 
 import androidx.room.*
-import com.example.alarmapp.Alarm
+import com.example.cnpm_nhomanhtuan_alarmclockapp.Alarm
 import kotlinx.coroutines.flow.Flow
 
 @Dao

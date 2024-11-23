@@ -1,10 +1,10 @@
-package com.example.alarmapp
+package com.example.cnpm_nhomanhtuan_alarmclockapp
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.example.cnpm_nhomanhtuan_alarmclockapp.Converters
+import com.example.cnpm_nhomanhtuan_alarmclockapp.utils.Converters
 
 @TypeConverters(Converters::class)
 @Entity(tableName = "alarms")

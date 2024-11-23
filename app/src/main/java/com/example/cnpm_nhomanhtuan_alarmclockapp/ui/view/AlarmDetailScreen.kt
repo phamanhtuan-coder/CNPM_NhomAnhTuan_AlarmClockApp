@@ -23,8 +23,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.alarmapp.Alarm
-import com.example.alarmapp.Time
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -402,7 +400,7 @@ fun BottomActionBar(
 @Composable
 fun EndlessRollingPadlockTimePicker(
     modifier: Modifier = Modifier,
-    initialTime: Time ,
+    initialTime: Time,
     onTimeSelected: (Time) -> Unit
 ) {
 //    val hoursList = (1..12).toList()

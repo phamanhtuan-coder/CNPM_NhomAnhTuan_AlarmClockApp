@@ -7,8 +7,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.alarmapp.Alarm
-import com.example.alarmapp.Time
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -35,7 +33,7 @@ class AlarmDetailViewModel (
         }
     }
 
-    fun insertAlarm(alarm :Alarm){
+    fun insertAlarm(alarm : Alarm){
         viewModelScope.launch {
             alarmRepository.insertAlarm(alarm = alarm)
         }

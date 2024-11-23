@@ -6,7 +6,8 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.example.alarmapp.Alarm
+import com.example.cnpm_nhomanhtuan_alarmclockapp.data.model.Alarm
+import com.example.cnpm_nhomanhtuan_alarmclockapp.receiver.AlarmReceiver
 import java.util.Calendar
 
 object AlarmScheduler {
