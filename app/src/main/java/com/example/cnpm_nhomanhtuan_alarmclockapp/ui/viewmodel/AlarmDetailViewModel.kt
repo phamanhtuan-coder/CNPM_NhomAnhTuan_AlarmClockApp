@@ -15,20 +15,20 @@ import com.example.cnpm_nhomanhtuan_alarmclockapp.data.repository.AlarmRepositor
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class AlarmDetailViewModel (
-    private val alarmId:Int,
+class AlarmDetailViewModel(
+    private val alarmId: Int,
     private val alarmRepository: AlarmRepository = Graph.repository
-):ViewModel(){
+) : ViewModel() {
     var state by mutableStateOf(AlarmState())
-       
+
     init {
-        if(alarmId > 0){
+        if (alarmId > 0) {
             viewModelScope.launch {
                 alarmRepository.getAlarmById(alarmId).collectLatest {
-                    state=state.copy(
+                    state = state.copy(
                         id = it.id,
                         label = it.label,
-                        time = it.time ,
+                        time = it.time,
                         days = it.days,
                         isEnabled = it.isEnabled,
                         sound = it.sound
@@ -36,16 +36,14 @@ class AlarmDetailViewModel (
                 }
             }
         }
-
     }
 
-
-
-    fun insertAlarm(alarm : Alarm){
+    fun insertAlarm(alarm: Alarm) {
         viewModelScope.launch {
-            alarmRepository.insertAlarm(alarm = alarm)
+            alarmRepository.insertAlarm(alarm)
         }
     }
+
     fun updateAlarm(alarm: Alarm, context: Context) {
         viewModelScope.launch {
             alarmRepository.updateAlarm(alarm)
@@ -55,10 +53,8 @@ class AlarmDetailViewModel (
             )
         }
     }
-
-
-
 }
+
 
 @Suppress("UNCHECKED_CAST")
 class AlarmDetailViewModelFactor(private val id:Int) : ViewModelProvider.Factory{

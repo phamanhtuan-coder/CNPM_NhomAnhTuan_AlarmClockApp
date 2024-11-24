@@ -115,34 +115,35 @@ fun AlarmDetailsScreen(
             BottomActionBar(
                 onCancelClick = {
                     navController.popBackStack()
-                                },
+                },
                 onSaveClick = {
+                    val alarmIdToUse = if (id > 0) id else (System.currentTimeMillis() % Int.MAX_VALUE).toInt()
                     val alarm = Alarm(
-                        id = if (id > 0) id else 0,
+                        id = alarmIdToUse,
                         label = alarmName.text,
                         time = selectedTime,
                         days = selectedDays.toList(),
                         sound = soundResourcePath,
                         isEnabled = true
                     )
-                    if (alarm.id > 0) { // Update existing alarm
+                    if (id > 0) { // Use 'id' instead of 'alarm.id'
+                        // Update existing alarm
                         viewModel.updateAlarm(alarm, context)
-                    } else { // Create new alarm
+                    } else {
+                        // Create new alarm
                         viewModel.insertAlarm(alarm)
                     }
-                    Log.d("AlarmDetail", "Editing Alarm with ID: $id")
+                    Log.d("AlarmDetail", "Editing Alarm with ID: $alarmIdToUse")
                     Log.d("AlarmState", "Current State ID: ${alarmState.id}")
 
-                    // Lên lịch báo thức
+                    // Schedule the alarm
                     AlarmScheduler.scheduleAlarmIfEnabled(
                         context = navController.context,
                         alarm = alarm
-
                     )
 
                     navController.popBackStack()
                 }
-
             )
         },
         contentColor = CustomColors.primary,
