@@ -9,9 +9,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.cnpm_nhomanhtuan_alarmclockapp.data.model.Alarm
 import com.example.cnpm_nhomanhtuan_alarmclockapp.data.repository.AlarmRepository
 import com.example.cnpm_nhomanhtuan_alarmclockapp.di.Graph
+import com.example.cnpm_nhomanhtuan_alarmclockapp.utils.AlarmScheduler
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+
+
 
 class AlarmScreenViewModel(
     private val alarmRepository: AlarmRepository = Graph.repository
@@ -33,12 +36,16 @@ class AlarmScreenViewModel(
                 alarmRepository.alarms.collectLatest { alarms ->
                     state = state.copy(alarms = alarms)
                     Log.d("AlarmScreenViewModel", "Fetched all alarms: $alarms")
+
                 }
+
             } catch (e: Exception) {
                 Log.e("AlarmScreenViewModel", "Error fetching alarms: ${e.message}", e)
             }
         }
     }
+
+
 
     fun deleteAlarm(alarm: Alarm) {
         viewModelScope.launch(exceptionHandler) {

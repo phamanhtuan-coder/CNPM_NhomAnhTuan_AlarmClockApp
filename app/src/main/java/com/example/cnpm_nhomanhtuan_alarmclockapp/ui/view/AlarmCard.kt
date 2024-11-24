@@ -77,6 +77,7 @@ fun AlarmCard(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             // 1st row: Alarm Label
+
             Text(
                 text = label,
                 fontSize = 14.sp,

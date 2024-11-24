@@ -42,7 +42,7 @@ fun NavGraph(
 
             SoundPickerScreen(
                 currentSound = currentSound,
-                navController = navController, // Truyền navController
+
                 onSoundSelected = {
                     // Logic xử lý khi chọn âm thanh (nếu cần)
                 },

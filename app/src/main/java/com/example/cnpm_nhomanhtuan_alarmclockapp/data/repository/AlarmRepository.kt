@@ -41,6 +41,8 @@ class AlarmRepository(private val alarmDao: AlarmDao) {
         alarmDao.getAllAlarms()
     }
 
+
+
     // Deletes an alarm from the database
     suspend fun deleteAlarm(alarm: Alarm) {
         alarmDao.delete(alarm)
@@ -50,6 +52,8 @@ class AlarmRepository(private val alarmDao: AlarmDao) {
     fun searchAlarms(query: String): Flow<List<Alarm>> {
         return alarmDao.searchAlarms(query)
     }
+
+
 
 
 }

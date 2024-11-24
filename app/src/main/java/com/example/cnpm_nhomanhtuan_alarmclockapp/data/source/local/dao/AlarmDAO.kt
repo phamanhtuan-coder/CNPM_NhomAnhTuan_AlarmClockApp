@@ -28,6 +28,7 @@ interface AlarmDao {
     @Query("SELECT * FROM alarms WHERE label LIKE '%' || :query || '%'")
     fun searchAlarms(query: String): Flow<List<Alarm>>
 
-
+    @Query("SELECT MAX(id) FROM alarms")
+    fun getMaxId(): Flow<Int>
 
 }

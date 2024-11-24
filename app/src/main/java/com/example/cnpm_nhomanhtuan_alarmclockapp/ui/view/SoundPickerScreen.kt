@@ -15,14 +15,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.example.cnpm_nhomanhtuan_alarmclockapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SoundPickerScreen(
     currentSound: String,
-    navController: NavHostController,
     onSoundSelected: (String) -> Unit,
     onSave: (String) -> Unit,
     onCancel: () -> Unit

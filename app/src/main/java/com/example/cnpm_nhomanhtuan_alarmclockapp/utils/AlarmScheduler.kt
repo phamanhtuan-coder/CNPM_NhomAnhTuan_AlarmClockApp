@@ -35,6 +35,7 @@ object AlarmScheduler {
 
     private fun scheduleAlarm(context: Context, alarmId: Int, hour: Int, minute: Int, dayOfWeek: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("ALARM_ID", alarmId)
         }

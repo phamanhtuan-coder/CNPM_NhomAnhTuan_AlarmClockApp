@@ -1,6 +1,7 @@
 package com.example.cnpm_nhomanhtuan_alarmclockapp.ui.view
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,22 +45,25 @@ fun AlarmDetailsScreen(
         factory = AlarmDetailViewModelFactor(id)
     )
     val alarmState = viewModel.state
+
     var selectedSound by remember { mutableStateOf("") }
-    //val alarmData = sampleAlarms.find { it.id == id }
-    var selectedTime by remember { mutableStateOf(alarmState.time) }
+    var selectedTime by remember{ mutableStateOf(alarmState.time) }
     var soundResourcePath by remember { mutableStateOf("") }
+    var selectedDays by remember { mutableStateOf(alarmState.days.toTypedArray().ifEmpty { Array(7) { "" } }) }
+    var alarmName by remember{ mutableStateOf(TextFieldValue(alarmState.label)) }
+
+
 
     LaunchedEffect(selectedSound) {
         val resourceId = getSoundResourceId(selectedSound)
-        soundResourcePath = if (resourceId != null) "res/raw/${context.resources.getResourceEntryName(resourceId)}" else "Unknown"
+        soundResourcePath =
+            if (resourceId != null) "res/raw/${context.resources.getResourceEntryName(resourceId)}" else "Unknown"
     }
 
     LaunchedEffect(alarmState.time) {
         selectedTime = alarmState.time
     }
 
-//    var selectedTime by remember { mutableStateOf(alarmState.time) }
-    var selectedDays by remember { mutableStateOf(alarmState.days.toTypedArray().ifEmpty { Array(7) { "" } }) }
     LaunchedEffect(alarmState.days) {
         selectedDays = alarmState.days.toTypedArray().ifEmpty { Array(7) { "" } }
     }
@@ -74,8 +79,6 @@ fun AlarmDetailsScreen(
             }
     }
 
-    //var selectedDays by remember { mutableStateOf(alarmState.days.toSet()) }
-    var alarmName by remember { mutableStateOf(TextFieldValue(alarmState.label)) }
 
     LaunchedEffect(alarmState.label) {
         alarmName = TextFieldValue(alarmState.label)
@@ -115,18 +118,20 @@ fun AlarmDetailsScreen(
                                 },
                 onSaveClick = {
                     val alarm = Alarm(
-                        id = if (id > 0) id else 1,
+                        id = if (id > 0) id else 0,
                         label = alarmName.text,
                         time = selectedTime,
                         days = selectedDays.toList(),
                         sound = soundResourcePath,
                         isEnabled = true
                     )
-                    if (id > 0) {
+                    if (alarm.id > 0) { // Update existing alarm
                         viewModel.updateAlarm(alarm, context)
-                    } else {
+                    } else { // Create new alarm
                         viewModel.insertAlarm(alarm)
                     }
+                    Log.d("AlarmDetail", "Editing Alarm with ID: $id")
+                    Log.d("AlarmState", "Current State ID: ${alarmState.id}")
 
                     // Lên lịch báo thức
                     AlarmScheduler.scheduleAlarmIfEnabled(
@@ -154,8 +159,7 @@ fun AlarmDetailsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text(text=alarmState.days.toString(), color = Color.White)
-                    Text(text=selectedDays.toString(), color = Color.White)
+                    Text(text=id.toString(), color = Color.White)
                     EndlessRollingPadlockTimePicker(
                         modifier = Modifier.fillMaxWidth(),
                         onTimeSelected = { time -> selectedTime = time },
@@ -192,6 +196,7 @@ fun AlarmDetailsScreen(
                         onDaysChange = { updatedDays -> selectedDays = updatedDays },
                         onNameChange = { updatedName -> alarmName = updatedName },
                         onSoundChange = {
+
                             navController.navigate("sound_picker/$selectedSound")
                         }
                     )
