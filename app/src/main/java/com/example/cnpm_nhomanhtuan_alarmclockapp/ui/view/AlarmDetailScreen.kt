@@ -160,7 +160,7 @@ fun AlarmDetailsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text(text=id.toString(), color = Color.White)
+//                    Text(text=id.toString(), color = Color.White)
                     EndlessRollingPadlockTimePicker(
                         modifier = Modifier.fillMaxWidth(),
                         onTimeSelected = { time -> selectedTime = time },

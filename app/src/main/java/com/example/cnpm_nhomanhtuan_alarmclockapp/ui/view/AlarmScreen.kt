@@ -122,9 +122,9 @@ fun AlarmScreen(
                     .padding(innerPadding),
             ) {
                 items (alarmScreenState.alarms){alarm ->
-                    Text("${alarm.id}")
+//                    Text("${alarm.id}")
                     AlarmCard(
-                        label = alarm.label.ifEmpty { "Alarm ${alarm.id}" },
+                        label = alarm.label.ifEmpty { "Alarm" },
                         time = alarm.time,
                         days =  alarm.days,
                         isEnabled = alarm.isEnabled,
